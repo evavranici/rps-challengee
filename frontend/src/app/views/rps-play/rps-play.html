@@ -1,1 +1,111 @@
-<p>rps-play works!</p>
+<div #myHiddenDiv class="hidden-div">
+  <app-leaderboard
+    [leaderboardStats]="playersStats">
+  </app-leaderboard>
+</div>
+    
+<div #rpsPlayArea id="rps-play-area" style="display: flex; flex-direction: row; align-items: center; justify-content: center; min-height: 100vh; background-color: #1a202c; color: white;">
+  <div class="monitoring-display flex flex-col md:flex-row justify-around items-stretch mt-8 gap-4">
+    <app-monitoring
+      [title]="'THE PLAYER MONITORING'"
+      [winRate]="playerWinRate"
+      [mostUsed]="playerMostUsed"
+      [historyDisplay]="playerHistoryDisplay"
+      [isPlayer]="true">
+    </app-monitoring>
+  </div>
+
+  <div class="flex items-center justify-center min-h-screen text-white" style="margin: 0px 50px 0px 50px">
+    <div class="hud-display p-6 md:p-8">
+
+      <header class="text-center mb-6">
+        <h1 id="main-title" class="font-orbitron text-3xl md:text-5xl font-bold tracking-wider text-cyan-300">Rock, Paper, Scissors</h1>
+      </header>
+
+      <div class="flex justify-between items-center mb-6 bg-black bg-opacity-30 p-4 rounded-lg">
+        <div class="text-center">
+          <div id="player-info" class="flex items-center justify-center space-x-2 mb-2">
+            <span id="player-avatar" class="text-2xl">{{ player?.icon }}</span>
+            <p id="player-name-display" class="font-orbitron text-xl md:text-2xl text-blue-400">{{ player?.name }}</p>
+          </div>
+          <p id="player-score" class="text-4xl md:text-5xl font-bold">{{ player?.stats?.playerScore }}</p>
+        </div>
+        <div class="text-center">
+          <p class="font-orbitron text-xl md:text-2xl text-red-400">COMPUTER</p>
+          <p id="computer-score" class="text-4xl md:text-5xl font-bold">{{ player?.stats?.computerScore }}</p>
+        </div>
+      </div>
+
+      <div #gameArena id="game-arena" class="flex justify-around items-center mb-8 min-h-[150px] relative">
+        <div *ngIf="playerChoiceDisplay && playerChoiceDisplay !== null" #playerChoiceDisplayEl id="player-choice-display" class="choice-card bg-gray-800 bg-opacity-70 p-4 rounded-lg border-2 selected">
+          <span [innerHTML]="playerChoiceDisplay | safeHtml"></span>
+        </div>
+
+        <div *ngIf="!countdownText && !playerChoiceDisplay && !computerChoiceDisplay" class="font-orbitron text-4xl text-gray-400 absolute">VS</div>
+        <div id="arena-center-text-countdown" class="text-center text-yellow-300 text-6xl font-bold mb-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          {{ countdownText }}
+        </div>
+
+        <div *ngIf="computerChoiceDisplay && computerChoiceDisplay !== null" #computerChoiceDisplayEl id="player-choice-display" class="choice-card bg-gray-800 bg-opacity-70 p-4 rounded-lg border-2 computer-selected">
+          <span [innerHTML]="computerChoiceDisplay | safeHtml"></span>
+        </div>
+      </div>
+
+      <div id="player-controls">
+        <h2 id="controls-title" class="text-center font-orbitron text-2xl mb-6 text-cyan-200">CHOOSE YOUR WEAPON</h2>
+        <div class="grid grid-cols-3 gap-4 md:gap-8">
+          <button (click)="makeChoice('rock')" id="rock" class="choice-card bg-gray-800 bg-opacity-50 p-4 rounded-lg border-2 border-transparent hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  [disabled]="isPlaying">
+            <div class="w-full h-20 md:h-32 flex items-center justify-center">
+              <span class="text-[80px]">✊</span>
+            </div>
+            <p class="text-center font-semibold text-lg mt-2">Rock</p>
+            <p class="text-center text-sm text-gray-400">Beats Scissors</p>
+          </button>
+          <button (click)="makeChoice('paper')" id="paper" class="choice-card bg-gray-800 bg-opacity-50 p-4 rounded-lg border-2 border-transparent hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  [disabled]="isPlaying">
+            <div class="w-full h-20 md:h-32 flex items-center justify-center">
+              <span class="text-[80px]">✋</span>
+            </div>
+            <p class="text-center font-semibold text-lg mt-2">Paper</p>
+            <p class="text-center text-sm text-gray-400">Beats Rock</p>
+          </button>
+          <button (click)="makeChoice('scissors')" id="scissors" class="choice-card bg-gray-800 bg-opacity-50 p-4 rounded-lg border-2 border-transparent hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  [disabled]="isPlaying">
+            <div class="w-full h-20 md:h-32 flex items-center justify-center">
+              <span class="text-[80px]">✌️</span>
+            </div>
+            <p class="text-center font-semibold text-lg mt-2">Scissors</p>
+            <p class="text-center text-sm text-gray-400">Beats Paper</p>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-center mt-8 flex font-bold">
+        <button
+          [disabled]="isPlaying"
+          (click)="backToMenu()"
+          class="btn-action md:w-2/3 bg-[rgb(56,165,179,1)] text-white py-3 rounded-lg hover:bg-[rgb(80,200,220) disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[rgb(56,165,179,1)] mr-4"
+        >Back
+        </button>
+
+         <button
+          [disabled]="isPlaying"
+          (click)="backToMenu()"
+          class="btn-action md:w-2/3 bg-yellow-500 text-gray-900 py-2 rounded-lg hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-500"
+        >Reset
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="monitoring-display flex flex-col md:flex-row justify-around items-stretch mt-8 gap-4">
+    <app-monitoring
+      [title]="'COMPUTER MONITORING'"
+      [winRate]="computerWinRate"
+      [mostUsed]="computerMostUsed"
+      [historyDisplay]="computerHistoryDisplay"
+      [isPlayer]="false">
+    </app-monitoring>
+  </div>
+</div>

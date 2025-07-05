@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Player, PlayerStats } from '../interfaces/player';
-import { Observable } from 'rxjs';
+import { Player, PlayerStats } from '../../shared/interfaces/player.interface';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { LeaderboardPlayerStats } from '../../views/leaderboard/leaderboard';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,19 @@ import { Observable } from 'rxjs';
 export class PlayerService {
   private backendApiPrefix = 'http://localhost:8080/api';
 
+   // Use BehaviorSubject to make current player observable
+  private _currentPlayer = new BehaviorSubject<Player | null>(null);
+  readonly currentPlayer$ = this._currentPlayer.asObservable();
+
   constructor(private http: HttpClient) { }
+
+   setCurrentPlayer(player: Player | null): void {
+    this._currentPlayer.next(player);
+  }
+
+  getCurrentPlayer(): Player | null {
+    return this._currentPlayer.getValue();
+  }
 
   getAllPlayers(): Observable<Player[]> {
     return this.http.get<Player[]>(`${this.backendApiPrefix}/players`);
@@ -43,5 +56,9 @@ export class PlayerService {
 
   resetPlayerScore(id: number): Observable<any> {
     return this.http.put(`${this.backendApiPrefix}/players/${id}/reset-stats`, {});
+  }
+
+  getLeaderboardPlayerStats(): Observable<any> {
+    return this.http.get(`${this.backendApiPrefix}/players/leaderboard-stats`);
   }
 }

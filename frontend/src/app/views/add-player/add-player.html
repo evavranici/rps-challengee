@@ -30,12 +30,12 @@
         <button
           (click)="savePlayer()"
           [disabled]="!playerName || playerName.trim() === ''"
-          class="btn-action w-full md:w-2/3 mx-auto bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="btn-action w-full md:w-2/3 mx-auto bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-600"
         >
           Start Game
         </button>
         <button
-          (click)="cancel()"
+          (click)="backToMenu()"
           class="btn-action w-full md:w-2/3 mx-auto bg-[rgb(56,165,179,1)] text-white font-bold py-3 px-6 rounded-lg hover:bg-[rgb(80,200,220)] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
         >Back
         </button>

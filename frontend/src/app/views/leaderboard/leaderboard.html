@@ -1,1 +1,41 @@
-<p>leaderboard works!</p>
+<div class="flex items-center justify-center min-h-screen">
+  <div class="hud-display p-6 md:p-8 text-center max-w-2xl max-w-4xl w-full">
+    <h1 id="leaderboard-title" class="font-orbitron text-3xl md:text-5xl font-bold text-center text-cyan-300 mb-6">Leaderboard</h1>
+    <div class="overflow-x-auto text-white">
+      <table class="leaderboard-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Win %</th>
+            <th>Games</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngIf="leaderboardStats.length === 0">
+            <td colspan="5" class="text-center text-gray-400 py-4">No player monitoring available yet. Create some players and play some games (or update stats via API)!</td>
+          </tr>
+          <tr *ngFor="let player of leaderboardStats">
+            <td class="rank">{{ player.rank }}</td>
+            <td>
+              <div class="flex items-center">
+                <span class="avatar">{{ player.icon }}</span>
+                <span>{{ player.name }}</span>
+              </div>
+            </td>
+            <td>{{ player.winPercentage }}%</td>
+            <td class="text-center">{{ player.gamesPlayed }}</td>
+            <td>{{ player.score | number:'1.4-4' }}</td> </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="text-center mt-8">
+      <button
+        (click)="backToMenu()"
+          class="btn-action w-full md:w-2/3 mx-auto bg-[rgb(56,165,179,1)] text-white font-bold py-3 px-6 rounded-lg hover:bg-[rgb(80,200,220)] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+      >Back
+      </button>
+    </div>
+  </div>
+</div>

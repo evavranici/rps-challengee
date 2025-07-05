@@ -3,8 +3,8 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Player } from '../../shared/interfaces/player';
-import { PlayerService } from '../../shared/services/player-service';
+import { Player } from '../../shared/interfaces/player.interface';
+import { PlayerService } from '../../shared/services/player.service';
 
 @Component({
   selector: 'app-add-player',
@@ -59,7 +59,7 @@ export class AddPlayer {
     });
   }
 
-  cancel(): void {
+  backToMenu(): void {
     this.router.navigate(['/']);
   }
 }

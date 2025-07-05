@@ -1,3 +1,5 @@
+import { GameChoice } from "../../views/rps-play/rps-play";
+
 export interface Player {
   id: number | null;
   name: string;
@@ -10,7 +12,7 @@ export interface PlayerStats {
   computerScore: number;
   playerWins: number;
   computerWins: number;
-  playerHistory: [];
-  computerHistory: [];
+  playerHistory:  GameChoice[]; // Stores 'rock', 'paper', 'scissors' choices
+  computerHistory: GameChoice[]; // Stores 'rock', 'paper', 'scissors' choices
   totalRounds: number;
 }
