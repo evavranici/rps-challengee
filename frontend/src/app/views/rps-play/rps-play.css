@@ -125,3 +125,29 @@
 .darkened {
   filter: brightness(0.5) blur(9px)
 }
+@keyframes shake {
+    0% { transform: translateX(0); }
+    10% { transform: translateX(-5px); }
+    20% { transform: translateX(5px); }
+    30% { transform: translateX(-5px); }
+    40% { transform: translateX(5px); }
+    50% { transform: translateX(-5px); }
+    60% { transform: translateX(5px); }
+    70% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+    90% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+/* Class to apply the shake animation */
+.shake-animation {
+    animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+    /*
+    animation-name: shake;            // Name of the keyframe animation
+    animation-duration: 0.82s;        // How long one cycle of the animation takes
+    animation-timing-function: cubic-bezier(.36,.07,.19,.97); // A bouncy timing function
+    animation-iteration-count: 1;     // How many times it plays (1 for a single shake)
+    animation-direction: normal;      // Plays forward
+    animation-fill-mode: both;        // Applies the styles from the first/last keyframe before/after animation
+    */
+}

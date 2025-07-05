@@ -10,6 +10,11 @@ import { Leaderboard } from '../leaderboard/leaderboard';
 
 export type GameChoice = 'rock' | 'paper' | 'scissors';
 
+const ANIMATION_DELAY_INITIAL = 50;
+const ANIMATION_DELAY_SHOW_MOVES = 500;
+const ANIMATION_DELAY_VANISH = 2000;
+const ANIMATION_DURATION_SHAKE = 500;
+
 @Component({
   selector: 'app-rps-play',
   standalone: true,
@@ -90,9 +95,6 @@ export class RpsPlay implements OnInit, OnDestroy {
 
     this.playerService.currentPlayer$.pipe(takeUntil(this.destroy$)).subscribe(player => {
       this.player = player;
-      if (this.player) {
-        this.updateUIDisplay();
-      }
     });
 
     this.listenForTabKey();
@@ -137,11 +139,8 @@ export class RpsPlay implements OnInit, OnDestroy {
         this.playerService.setCurrentPlayer(playerData);
         this.computerHistory = [];
         this.updateUIDisplay();
-        console.log('Loaded player:', playerData);
       },
       error: (error) => {
-        console.error('Error fetching player data:', error);
-        alert('Failed to load player data. Redirecting to home.');
         this.router.navigate(['/']);
       }
     });
@@ -160,16 +159,14 @@ export class RpsPlay implements OnInit, OnDestroy {
     const winner = this.getWinner(playerChoice, computerChoice);
 
     this.player.stats.playerHistory.push(playerChoice);
+    this.player.stats.computerHistory.push(computerChoice);
+
     this.computerHistory.push(computerChoice);
     this.player.stats.totalRounds++;
 
     await this.startCountdown();
-
     this.displayChoices(playerChoice, computerChoice);
-
     await this.playAnimation(winner);
-
-    this.updateUIDisplay();
 
     if (this.player.id !== null) {
       this.playerService.updatePlayerStats(this.player.id, this.player.stats).subscribe({
@@ -204,7 +201,7 @@ export class RpsPlay implements OnInit, OnDestroy {
   }
 
   private getComputerChoice(): GameChoice {
-    return this.choiceKeys[Math.floor(Math.random() * this.choiceKeys.length)];
+    return this.choiceKeys[Math.floor(Math.random() * Math.random() * this.choiceKeys.length)];
   }
 
   private getWinner(playerChoice: GameChoice, computerChoice: GameChoice): 'player' | 'computer' | 'tie' {
@@ -257,14 +254,10 @@ export class RpsPlay implements OnInit, OnDestroy {
     this.computerWinRate = stats.totalRounds > 0 ? Math.round((stats.computerWins / stats.totalRounds) * 100) : 0;
 
     this.playerMostUsed = this.getMostFrequentDisplay(stats.playerHistory);
-    this.computerMostUsed = this.getMostFrequentDisplay(this.computerHistory);
-
-    // Limit history display to the last 5 elements
-    const playerLast5 = stats.playerHistory.slice(-5);
-    const computerLast5 = this.computerHistory.slice(-5);
+    this.computerMostUsed = this.getMostFrequentDisplay(stats.computerHistory);
 
     this.playerHistoryDisplay = this.getHistoryDisplay(stats.playerHistory);
-    this.computerHistoryDisplay = this.getHistoryDisplay(this.computerHistory);
+    this.computerHistoryDisplay = this.getHistoryDisplay(stats.computerHistory);
   }
 
   getMostFrequentDisplay(history: GameChoice[]): string {
@@ -287,39 +280,74 @@ export class RpsPlay implements OnInit, OnDestroy {
   }
 
   private async playAnimation(winner: 'player' | 'computer' | 'tie'): Promise<void> {
-    let playerEl;
-    let computerEl;
-    let winningEl: HTMLElement;
-    let losingEl: HTMLElement;
+    await this.delay(ANIMATION_DELAY_INITIAL);
 
-    await new Promise(resolve => setTimeout(resolve, 50));
+    const playerEl = this.playerChoiceDisplayEl.nativeElement;
+    const computerEl = this.computerChoiceDisplayEl.nativeElement;
+    const gameArenaEl = this.gameArenaEl.nativeElement;
 
-    playerEl = this.playerChoiceDisplayEl.nativeElement;
-    computerEl = this.computerChoiceDisplayEl.nativeElement;
+    this.clearAnimationStates(playerEl, computerEl, gameArenaEl);
 
-    if (winner === 'player') {
-      winningEl = playerEl;
-      losingEl = computerEl;
-    } else {
-      winningEl = computerEl;
-      losingEl = playerEl;
+    if (winner === 'tie') {
+      await this.handleTieAnimation(gameArenaEl);
+      this.finalizeRound(winner);
+      return;
     }
 
-    this.gameArenaEl.nativeElement.style.transform = 'scale(1.05)'
+    const [winningEl, losingEl] = winner === 'player'
+      ? [playerEl, computerEl]
+      : [computerEl, playerEl];
 
-    setTimeout(() => {
-      winningEl.classList.add('show-in-front');
-      playerEl.classList.add('player-moves');
-      computerEl.classList.add('computer-moves');
-    }, 500);
+    await this.delay(ANIMATION_DELAY_INITIAL);
 
-    setTimeout(() => {
-      losingEl.classList.add('animate-vanish');
-      this.gameArenaEl.nativeElement.style.transform = 'scale(1)'
-      this.updateScore(winner);
-      this.isPlaying = false;
-    }, 2000);
+    gameArenaEl.style.transform = 'scale(1.05)'
 
+    await this.delay(ANIMATION_DELAY_SHOW_MOVES);
+    this.applyMoveAnimations(winningEl, playerEl, computerEl);
+
+    await this.delay(ANIMATION_DELAY_VANISH - ANIMATION_DELAY_SHOW_MOVES);
+    this.applyVanishAnimation(losingEl, gameArenaEl);
+
+    this.finalizeRound(winner);
+  }
+
+  delay(ms: number): Promise<void> {
+      return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  clearAnimationStates(playerEl: HTMLElement, computerEl: HTMLElement, gameArenaEl: HTMLElement): void {
+    gameArenaEl.classList.remove('shake-animation');
+    gameArenaEl.style.transform = 'scale(1)';
+    playerEl.classList.remove('show-in-front', 'player-moves', 'animate-vanish');
+    computerEl.classList.remove('show-in-front', 'computer-moves', 'animate-vanish');
+  }
+
+  async handleTieAnimation(gameArenaEl: HTMLElement): Promise<void> {
+    await this.delay(ANIMATION_DELAY_SHOW_MOVES);
+
+    gameArenaEl.classList.add('shake-animation');
+
+    // Wait for the shake animation to complete before proceeding
+    // This requires a CSS animation listener, or a fixed duration delay
+    await this.delay(ANIMATION_DURATION_SHAKE);
+    gameArenaEl.classList.remove('shake-animation');
+  }
+
+  finalizeRound(winner: 'player' | 'computer' | 'tie'): void {
+    this.updateScore(winner);
+    this.updateUIDisplay();
+    this.isPlaying = false; // Allow new round to start
+  }
+
+  applyMoveAnimations(winningEl: HTMLElement, playerEl: HTMLElement, computerEl: HTMLElement): void {
+    winningEl.classList.add('show-in-front');
+    playerEl.classList.add('player-moves');
+    computerEl.classList.add('computer-moves');
+  }
+
+  applyVanishAnimation(losingEl: HTMLElement, gameArenaEl: HTMLElement): void {
+    losingEl.classList.add('animate-vanish');
+    gameArenaEl.style.transform = 'scale(1)'; // Reset game arena scale
   }
 
   resetPlayerScore(): void {
@@ -327,11 +355,11 @@ export class RpsPlay implements OnInit, OnDestroy {
 
     if (confirm('Are you sure you want to reset all your stats for this player?')) {
       this.playerService.resetPlayerScore(this.player.id).subscribe({
-        next: (response) => {
+        next: () => {
           this.loadPlayerData();
           this.computerHistory = [];
         },
-        error: (error) => {
+        error: () => {
         }
       });
     }
