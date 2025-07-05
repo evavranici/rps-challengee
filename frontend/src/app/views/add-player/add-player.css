@@ -1,0 +1,11 @@
+.emoji-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+}
+
+.selected-emoji {
+  background-color: rgba(225, 225, 52250, 0.1);
+  border: 2px solid #60a5fa;
+}

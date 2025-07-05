@@ -1,1 +1,45 @@
-<p>add-player works!</p>
+<div class="flex items-center justify-center min-h-screen">
+  <div class="hud-display p-8 rounded-lg shadow-xl text-center max-w-4xl w-full">
+    <h1 class="font-orbitron text-4xl md:text-5xl font-bold tracking-wider text-cyan-300 mb-8">Create New Player</h1>
+
+    <div class="space-y-6">
+      <div>
+        <label for="playerName" class="block text-xl text-cyan-200 mb-2 text-left">Player Name:</label>
+        <input
+          id="playerName"
+          type="text"
+          [(ngModel)]="playerName"
+          placeholder="Enter your name"
+          class="w-full bg-gray-900 bg-opacity-50 text-white p-3 rounded-lg border-2 border-cyan-700 focus:outline-none focus:border-cyan-400"
+        />
+      </div>
+
+      <div>
+        <label for="emojiSelector" class="block text-xl text-cyan-200 mb-2 text-left">Choose Icon:</label>
+        <div class="grid grid-cols-6 gap-2 p-6 border border-gray-300 rounded-md max-h-40 overflow-y-auto">
+          <div *ngFor="let emoji of emojis"
+               (click)="selectedEmoji = emoji"
+               [class.selected-emoji]="selectedEmoji === emoji"
+               class="emoji-item text-4xl cursor-pointer p-1 rounded-md hover:scale-125 transition duration-150">
+            {{ emoji }}
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4 mt-6">
+        <button
+          (click)="savePlayer()"
+          [disabled]="!playerName || playerName.trim() === ''"
+          class="btn-action w-full md:w-2/3 mx-auto bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Start Game
+        </button>
+        <button
+          (click)="cancel()"
+          class="btn-action w-full md:w-2/3 mx-auto bg-[rgb(56,165,179,1)] text-white font-bold py-3 px-6 rounded-lg hover:bg-[rgb(80,200,220)] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >Back
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
