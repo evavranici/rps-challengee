@@ -6,7 +6,6 @@ import jakarta.persistence.Converter;
 import java.util.ArrayList;
 import java.util.List;
 
-// Assuming you have an enum like:
 // public enum GameChoice { ROCK, PAPER, SCISSORS; }
 
 @Converter(autoApply = true) // Automatically apply this converter to all GameChoice enums
