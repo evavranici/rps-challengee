@@ -1,1 +1,41 @@
-<p>home works!</p>
+<div class="flex items-center justify-center min-h-screen text-white">
+  <div class="hud-display p-8 rounded-lg shadow-xl text-center max-w-4xl w-full">
+    <h1 class="font-orbitron text-4xl md:text-5xl font-bold tracking-wider text-cyan-300 mb-8">Rock, Paper, Scissors</h1>
+
+    <div class="space-y-6">
+      <button
+        (click)="goToCreatePlayer()"
+        class="btn-action w-full md:w-2/3 mx-auto bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
+      >
+        Create New Player
+      </button>
+
+      <div *ngIf="players.length !== 0">
+        <h2 class="font-orbitron text-2xl text-cyan-200 mb-4">Or Select Player</h2>
+        <div id="player-list" class="space-y-3 max-h-60 overflow-y-auto border border-gray-200 rounded-lg p-2">
+          <div *ngFor="let player of players"
+              (click)="selectPlayer(player)"
+              [class.selected-player]="selectedPlayer && selectedPlayer.id === player.id"
+              class="player-list-item flex items-center justify-center space-x-4 p-2 rounded-lg cursor-pointer transition duration-150">
+            <span class="text-4xl">{{ player.icon || '👤' }}</span>
+            <span class="text-xl">{{ player.name }}</span>
+          </div>
+        </div>
+      </div>
+      
+
+      <div class="space-y-4 mt-6">
+        <button
+          [ngClass]="{
+            'bg-purple-600 hover:bg-purple-700 text-white btn-action': players.length > 0,
+            'bg-purple-400 text-purple-100 cursor-not-allowed': players.length === 0
+          }"
+          (click)="players.length > 0 ? viewLeaderboard() : null"
+          class="w-full md:w-2/3 mx-auto font-bold py-3 px-6 rounded-lg"
+        >
+          View Leaderboard
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
