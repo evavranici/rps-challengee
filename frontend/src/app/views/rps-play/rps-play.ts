@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Player } from '../../shared/interfaces/player.interface';
-import { PlayerService } from '../../shared/services/player.service';
+import { ApiService } from '../../shared/services/api.service';
 import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 import { Monitoring } from '../../components/monitoring/monitoring';
 import { Leaderboard } from '../leaderboard/leaderboard';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
+import { LeaderboardService } from '../../shared/services/leaderboard-service';
 
 export type GameChoice = 'rock' | 'paper' | 'scissors';
 
@@ -60,7 +61,8 @@ export class RpsPlay implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private playerService: PlayerService
+    private apiService: ApiService,
+    public leaderboardService: LeaderboardService,
   ) { }
 
   ngOnInit(): void {
@@ -75,19 +77,19 @@ export class RpsPlay implements OnInit, OnDestroy {
       }
     });
 
-    this.playerService.currentPlayer$.pipe(takeUntil(this.destroy$)).subscribe(player => {
+    this.apiService.currentPlayer$.pipe(takeUntil(this.destroy$)).subscribe(player => {
       this.player = player;
     });
 
-    this.listenForTabKey();
+    this.listenForTabKeyPress();
   }
 
-  listenForTabKey(): void {
-     document.addEventListener('keydown', (event) => {
-        if (event.key === 'Tab') {  
-            event.preventDefault(); // Prevent the browser's default Tab behavior (to move focus to the next element)
-            this.isLeaderboardVisible ? this.removeLeaderboard() : this.showLeaderboard();
-        }
+  listenForTabKeyPress(): void {
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Tab') {  
+        event.preventDefault(); // Prevent default tab behavior to go to the next focusable element
+        this.isLeaderboardVisible ? this.hideLeaderboard() : this.showLeaderboard();
+      }
     });
   } 
 
@@ -96,7 +98,7 @@ export class RpsPlay implements OnInit, OnDestroy {
     this.rpsPlayAreaEl.nativeElement.classList.add('darkened');
   }
 
-  removeLeaderboard(): void {
+  hideLeaderboard(): void {
     this.rpsPlayAreaEl.nativeElement.classList.remove('darkened');
     this.isLeaderboardVisible = !this.isLeaderboardVisible;
   }
@@ -109,12 +111,12 @@ export class RpsPlay implements OnInit, OnDestroy {
   loadPlayerData(): void {
     if (this.playerId === null) return;
 
-    this.playerService.getPlayerById(this.playerId).subscribe({
+    this.apiService.getPlayerById(this.playerId).subscribe({
       next: (playerData) => {
         if (!playerData.stats) {
           playerData.stats = { playerScore: 0, computerScore: 0, playerWins: 0, computerWins: 0, totalRounds: 0, playerHistory: [], computerHistory: [] };
         }
-        this.playerService.setCurrentPlayer(playerData);
+        this.apiService.setCurrentPlayer(playerData);
         this.computerHistory = [];
         this.updateUIDisplay();
       },
@@ -147,9 +149,9 @@ export class RpsPlay implements OnInit, OnDestroy {
     await this.playAnimation(winner);
 
     if (this.player.id !== null) {
-      this.playerService.updatePlayerStats(this.player.id, this.player.stats).subscribe({
+      this.apiService.updatePlayerStats(this.player.id, this.player.stats).subscribe({
         next: (updatedPlayer) => {
-          this.playerService.setCurrentPlayer(updatedPlayer);
+          this.apiService.setCurrentPlayer(updatedPlayer);
         },
         error: () => {
         }
@@ -311,6 +313,7 @@ export class RpsPlay implements OnInit, OnDestroy {
     this.updateScore(winner);
     this.updateUIDisplay();
     this.isPlaying = false; // Allow new round to start
+    this.leaderboardService.markLeaderboardStale();
   }
 
   applyMoveAnimations(winningEl: HTMLElement, playerEl: HTMLElement, computerEl: HTMLElement): void {
@@ -328,7 +331,7 @@ export class RpsPlay implements OnInit, OnDestroy {
     if (!this.player || this.player.id === null) return;
 
     if (confirm('Are you sure you want to reset all your stats for this player?')) {
-      this.playerService.resetPlayerScore(this.player.id).subscribe({
+      this.apiService.resetPlayerScore(this.player.id).subscribe({
         next: () => {
           this.loadPlayerData();
           this.computerHistory = [];

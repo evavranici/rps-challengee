@@ -1,5 +1,3 @@
-// src/app/shared/services/leaderboard-data.service.ts
-
 import { Injectable, signal, WritableSignal } from '@angular/core';
 import { ApiService } from './api.service';
 import { LeaderboardPlayerStats } from '../interfaces/leaderboard.interface';

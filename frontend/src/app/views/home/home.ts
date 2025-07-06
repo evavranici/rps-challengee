@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Player } from '../../shared/interfaces/player.interface';
-import { PlayerService } from '../../shared/services/player.service';
+import { ApiService } from '../../shared/services/api.service';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
 
 @Component({
@@ -23,7 +23,7 @@ export class Home implements OnInit {
 
   constructor(
     private router: Router,
-    private playerService: PlayerService,
+    private apiService: ApiService,
   ) { }
 
   ngOnInit(): void {
@@ -31,7 +31,7 @@ export class Home implements OnInit {
   }
 
   fetchPlayers(): void {
-    this.playerService.getAllPlayers().subscribe({
+    this.apiService.getAllPlayers().subscribe({
       next: (data) => {
         this.players = data;
       },

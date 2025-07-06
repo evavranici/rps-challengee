@@ -1,19 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { PlayerService } from '../../shared/services/player.service';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-
-// matched the DTO in backend
-export interface LeaderboardPlayerStats {
-  id: number;
-  name: string;
-  icon: string;
-  winPercentage: number;
-  gamesPlayed: number;
-  score: number; // the Wilson Score Interval
-  rank?: number; // Optional: We'll add this rank in the frontend for display
-}
+import { LeaderboardService } from '../../shared/services/leaderboard-service';
+import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
 
 @Component({
   selector: 'app-leaderboard',
@@ -23,7 +13,7 @@ export interface LeaderboardPlayerStats {
   imports: [
     CommonModule,
     DecimalPipe,
-    CustomizedButton
+    CustomizedButton,
   ]
 })
 export class Leaderboard implements OnInit {
@@ -31,26 +21,12 @@ export class Leaderboard implements OnInit {
 
   constructor(
      private router: Router,
-     private playerService: PlayerService,
+     public leaderboardService: LeaderboardService,
   ) { }
 
   ngOnInit(): void {
-    this.fetchLeaderboardStats();
-  }
-
-  fetchLeaderboardStats(): void {
-    this.playerService.getLeaderboardPlayerStats().subscribe({
-      next: (data: LeaderboardPlayerStats[]) => {
-        console.log('Leaderboard data received:', data)
-        // The backend already sorts by score, so we just assign ranks based on array index
-        this.leaderboardStats = data.map((player, index) => ({
-          ...player,
-          rank: index + 1 // (1-based)
-        }));
-      },
-      error: () => {
-      }
-    });
+    this.leaderboardService.fetchLeaderboardData();
+    console.log('Leaderboard component initialized. Displaying data from service.');
   }
 
   backToMenu(): void {

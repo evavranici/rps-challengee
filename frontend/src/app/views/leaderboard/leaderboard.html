@@ -16,7 +16,7 @@
           <tr *ngIf="leaderboardStats.length === 0">
             <td colspan="5" class="text-center text-gray-400 py-4">No player monitoring available yet. Create some players and play some games (or update stats via API)!</td>
           </tr>
-          <tr *ngFor="let player of leaderboardStats">
+          <tr *ngFor="let player of leaderboardService.leaderboardStats()">
             <td class="rank">{{ player.rank }}</td>
             <td>
               <div class="flex items-center">
