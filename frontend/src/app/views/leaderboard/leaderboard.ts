@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { HttpClient, } from '@angular/common/http';
-import { CommonModule, NgFor, NgIf, DecimalPipe } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { PlayerService } from '../../shared/services/player.service';
 
@@ -22,11 +21,11 @@ export interface LeaderboardPlayerStats {
   standalone: true,
   imports: [
     CommonModule,
-    NgFor, NgIf, DecimalPipe,
+    DecimalPipe,
   ]
 })
 export class Leaderboard implements OnInit {
-  @Input() leaderboardStats: LeaderboardPlayerStats[] = [];
+  leaderboardStats: LeaderboardPlayerStats[] = [];
 
   constructor(
      private router: Router,
@@ -40,6 +39,7 @@ export class Leaderboard implements OnInit {
   fetchLeaderboardStats(): void {
     this.playerService.getLeaderboardPlayerStats().subscribe({
       next: (data: LeaderboardPlayerStats[]) => {
+        console.log('Leaderboard data received:', data)
         // The backend already sorts by score, so we just assign ranks based on array index
         this.leaderboardStats = data.map((player, index) => ({
           ...player,

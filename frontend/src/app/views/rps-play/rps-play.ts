@@ -52,28 +52,28 @@ export class RpsPlay implements OnInit, OnDestroy {
     paper: { name: 'Paper', beats: 'rock', emoji: '✋' },
     scissors: { name: 'Scissors', beats: 'paper', emoji: '✌️' }
   };
-  private choiceKeys: GameChoice[] = ['rock', 'paper', 'scissors'];
+  
+  choiceKeys: GameChoice[] = ['rock', 'paper', 'scissors'];
+  destroy$ = new Subject<void>();
 
-  private destroy$ = new Subject<void>();
-
-  playersStats = [
-    {
-        "id": 2,
-        "name": "Patoooootie",
-        "icon": "\uD83D\uDE81",
-        "winPercentage": 33.33,
-        "gamesPlayed": 3,
-        "score": 0.061490315276160515
-    },
-    {
-        "id": 1,
-        "name": "Eva",
-        "icon": "\uD83D\uDE80",
-        "winPercentage": 0.0,
-        "gamesPlayed": 5,
-        "score": -3.139202815737979E-17
-    }
-]
+  // playersStats = [
+  //   {
+  //       "id": 2,
+  //       "name": "Patoooootie",
+  //       "icon": "\uD83D\uDE81",
+  //       "winPercentage": 33.33,
+  //       "gamesPlayed": 3,
+  //       "score": 0.061490315276160515
+  //   },
+  //   {
+  //       "id": 1,
+  //       "name": "Eva",
+  //       "icon": "\uD83D\uDE80",
+  //       "winPercentage": 0.0,
+  //       "gamesPlayed": 5,
+  //       "score": -3.139202815737979E-17
+  //   }
+  // ]
 
   constructor(
     private route: ActivatedRoute,
@@ -101,26 +101,24 @@ export class RpsPlay implements OnInit, OnDestroy {
   }
 
   listenForTabKey(): void {
-    
      document.addEventListener('keydown', (event) => {
         if (event.key === 'Tab') {  
-            // Prevent the browser's default Tab behavior (which is to move focus to the next element)
-            event.preventDefault();
+            event.preventDefault(); // Prevent the browser's default Tab behavior (to move focus to the next element)
             this.isLeaderboardVisible ? this.removeLeaderboard() : this.showLeaderboard();
-            this.isLeaderboardVisible = !this.isLeaderboardVisible;
-            console.log('Tab key pressed, toggling leaderboard visibility:', this.isLeaderboardVisible);
         }
     });
-  }
+  } 
 
   showLeaderboard(): void {
-    this.rpsPlayAreaEl.nativeElement.classList.add('darkened');
-    this.myHiddenDivEl.nativeElement.classList.add('show'); 
+    this.isLeaderboardVisible = !this.isLeaderboardVisible;
+    setTimeout(() => {
+      this.rpsPlayAreaEl.nativeElement.classList.add('darkened');
+    }, 0);
   }
 
   removeLeaderboard(): void {
     this.rpsPlayAreaEl.nativeElement.classList.remove('darkened');
-    this.myHiddenDivEl.nativeElement.classList.remove('show');
+    this.isLeaderboardVisible = !this.isLeaderboardVisible;
   }
 
   ngOnDestroy(): void {
