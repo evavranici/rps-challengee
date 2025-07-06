@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Player, PlayerStats } from '../../shared/interfaces/player.interface';
+import { Player, PlayerStats } from '../interfaces/player.interface';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PlayerService {
+export class ApiService {
   private backendApiPrefix = 'http://localhost:8080/api';
 
    // Use BehaviorSubject to make current player observable
