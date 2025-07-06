@@ -111,8 +111,7 @@ docker run -p 80:80 -p 8080:8080 --name my-rps-app rps-challengee
 Check one specific metrics:
 - Nr. of all players created: http://localhost:8080/actuator/metrics/player.created.total
 - Nr. of all games played: http://localhost:8080/actuator/metrics/player.stats.updated.total
-- Total time taken to update player statistics: http://localhost:8080/actuator/metrics/player.stats.update.duration
-- Total time taken to reset player statistics: http://localhost:8080/actuator/metrics/player.stats.reset.duration
+- Nr. of total resets by players: http://localhost:8080/actuator/metrics/player.stats.reset.total
 
 📊 Metrics for Prometheus	  | http://localhost:8080/actuator/prometheus
 
