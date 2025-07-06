@@ -180,7 +180,7 @@ export class RpsPlay implements OnInit, OnDestroy {
   }
 
   private getComputerChoice(): GameChoice {
-    return this.choiceKeys[Math.floor(Math.random() * Math.random() * this.choiceKeys.length)];
+    return this.choiceKeys[Math.floor(Math.random() * this.choiceKeys.length)];
   }
 
   private getWinner(playerChoice: GameChoice, computerChoice: GameChoice): 'player' | 'computer' | 'tie' {
