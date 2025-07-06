@@ -69,6 +69,7 @@ Ensure you have the following installed:
 - Node.js 18+ & npm 8+ (or Yarn)
 - Angular CLI 17+ → `npm install -g @angular/cli`
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Prometheus](https://prometheus.io/)
 - [Git](https://git-scm.com/)
 
 ### ⚙️ Backend Setup
@@ -118,10 +119,12 @@ User: sa
 Password: myverystrongpassword
 ```
 
-📍 Prometheus UI (if running separately):
-http://localhost:9090
+📍 Prometheus UI (if running separately)
+```bash
+brew services start prometheus
+```
+and then access it at: http://localhost:9090
 
-Ensure prometheus.yml scrapes host.docker.internal:8080.
 
 ## 📐 UI/UX Design
 This project includes a Figma file for the color palette of the reusable button UI component.
