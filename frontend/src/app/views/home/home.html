@@ -3,12 +3,11 @@
     <h1 class="font-orbitron text-4xl md:text-5xl font-bold tracking-wider text-cyan-300 mb-8">Rock, Paper, Scissors</h1>
 
     <div class="space-y-6">
-      <button
-        (click)="goToCreatePlayer()"
-        class="btn-action w-full md:w-2/3 mx-auto bg-blue-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-700 transition duration-300"
-      >
-        Create New Player
-      </button>
+      <app-customized-button
+        text="Create New Player"
+        className="bg-blue-600 hover:bg-blue-700"
+        (buttonClick)="goToCreatePlayer()"
+      ></app-customized-button>
 
       <div *ngIf="players.length !== 0">
         <h2 class="font-orbitron text-2xl text-cyan-200 mb-4">Or Select Player</h2>
@@ -22,20 +21,13 @@
           </div>
         </div>
       </div>
-      
 
-      <div class="space-y-4 mt-6">
-        <button
-          [ngClass]="{
-            'bg-purple-600 hover:bg-purple-700 text-white btn-action': players.length > 0,
-            'bg-purple-400 text-purple-100 cursor-not-allowed': players.length === 0
-          }"
-          (click)="players.length > 0 ? viewLeaderboard() : null"
-          class="w-full md:w-2/3 mx-auto font-bold py-3 px-6 rounded-lg"
-        >
-          View Leaderboard
-        </button>
-      </div>
+      <app-customized-button
+        text="View Leaderboard"
+        className="bg-purple-600 hover:bg-purple-700"
+        (buttonClick)="players.length > 0 ? viewLeaderboard() : null"
+        [disabled]="players.length === 0"
+      ></app-customized-button>
     </div>
   </div>
 </div>

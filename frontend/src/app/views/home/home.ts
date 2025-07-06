@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Player } from '../../shared/interfaces/player.interface';
 import { PlayerService } from '../../shared/services/player.service';
+import { CustomizedButton } from '../../components/customized-button/customized-button';
 
 @Component({
   selector: 'app-home',
@@ -13,6 +14,7 @@ import { PlayerService } from '../../shared/services/player.service';
   imports: [
     CommonModule,
     FormsModule,
+    CustomizedButton,
   ]
 })
 export class Home implements OnInit {

@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 import { Monitoring } from '../../components/monitoring/monitoring';
 import { Leaderboard } from '../leaderboard/leaderboard';
+import { CustomizedButton } from '../../components/customized-button/customized-button';
 
 export type GameChoice = 'rock' | 'paper' | 'scissors';
 
@@ -18,7 +19,7 @@ const ANIMATION_DURATION_SHAKE = 500;
 @Component({
   selector: 'app-rps-play',
   standalone: true,
-  imports: [CommonModule, SafeHtmlPipe, Monitoring, Leaderboard],
+  imports: [CommonModule, SafeHtmlPipe, Monitoring, Leaderboard, CustomizedButton],
   templateUrl: './rps-play.html',
   styleUrls: ['./rps-play.css']
 })
@@ -56,25 +57,6 @@ export class RpsPlay implements OnInit, OnDestroy {
   choiceKeys: GameChoice[] = ['rock', 'paper', 'scissors'];
   destroy$ = new Subject<void>();
 
-  // playersStats = [
-  //   {
-  //       "id": 2,
-  //       "name": "Patoooootie",
-  //       "icon": "\uD83D\uDE81",
-  //       "winPercentage": 33.33,
-  //       "gamesPlayed": 3,
-  //       "score": 0.061490315276160515
-  //   },
-  //   {
-  //       "id": 1,
-  //       "name": "Eva",
-  //       "icon": "\uD83D\uDE80",
-  //       "winPercentage": 0.0,
-  //       "gamesPlayed": 5,
-  //       "score": -3.139202815737979E-17
-  //   }
-  // ]
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -111,9 +93,7 @@ export class RpsPlay implements OnInit, OnDestroy {
 
   showLeaderboard(): void {
     this.isLeaderboardVisible = !this.isLeaderboardVisible;
-    setTimeout(() => {
-      this.rpsPlayAreaEl.nativeElement.classList.add('darkened');
-    }, 0);
+    this.rpsPlayAreaEl.nativeElement.classList.add('darkened');
   }
 
   removeLeaderboard(): void {
@@ -171,7 +151,7 @@ export class RpsPlay implements OnInit, OnDestroy {
         next: (updatedPlayer) => {
           this.playerService.setCurrentPlayer(updatedPlayer);
         },
-        error: (error) => {
+        error: () => {
         }
       });
     }
@@ -272,7 +252,6 @@ export class RpsPlay implements OnInit, OnDestroy {
     return history.slice(-5).map(choice => `<span style="font-size: 2em; margin: 0 5px;">${this.choices[choice].emoji}</span>`).join('');
   }
 
-  // Renamed from getChoiceSvg to getChoiceEmoji for clarity
   getChoiceEmoji(choiceKey: GameChoice): string {
     return this.choices[choiceKey].emoji;
   }
@@ -322,11 +301,8 @@ export class RpsPlay implements OnInit, OnDestroy {
 
   async handleTieAnimation(gameArenaEl: HTMLElement): Promise<void> {
     await this.delay(ANIMATION_DELAY_SHOW_MOVES);
-
     gameArenaEl.classList.add('shake-animation');
 
-    // Wait for the shake animation to complete before proceeding
-    // This requires a CSS animation listener, or a fixed duration delay
     await this.delay(ANIMATION_DURATION_SHAKE);
     gameArenaEl.classList.remove('shake-animation');
   }

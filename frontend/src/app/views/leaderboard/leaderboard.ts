@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { PlayerService } from '../../shared/services/player.service';
+import { CustomizedButton } from '../../components/customized-button/customized-button';
 
 // matched the DTO in backend
 export interface LeaderboardPlayerStats {
@@ -22,6 +23,7 @@ export interface LeaderboardPlayerStats {
   imports: [
     CommonModule,
     DecimalPipe,
+    CustomizedButton
   ]
 })
 export class Leaderboard implements OnInit {

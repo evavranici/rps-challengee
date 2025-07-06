@@ -2,7 +2,7 @@
   <app-leaderboard></app-leaderboard>
 </div>
     
-<div #rpsPlayArea id="rps-play-area" style="display: flex; flex-direction: row; align-items: center; justify-content: center; min-height: 100vh; background-color: #1a202c; color: white;">
+<div #rpsPlayArea id="rps-play-area" class="flex flex-row items-center justify-center min-h-screen bg-gray-900 text-white">
   <div class="monitoring-display flex flex-col md:flex-row justify-around items-stretch mt-8 gap-4">
     <app-monitoring
       [title]="'THE PLAYER MONITORING'"
@@ -13,7 +13,7 @@
     </app-monitoring>
   </div>
 
-  <div class="flex items-center justify-center min-h-screen text-white" style="margin: 0px 50px 0px 50px">
+  <div class="flex items-center justify-center min-h-scr  een text-white my-0 mx-[50px]">
     <div class="hud-display p-6 md:p-8">
 
       <header class="text-center mb-6">
@@ -79,20 +79,23 @@
         </div>
       </div>
 
-      <div class="text-center mt-8 flex font-bold">
-        <button
-          [disabled]="isPlaying"
-          (click)="backToMenu()"
-          class="btn-action md:w-2/3 bg-[rgb(56,165,179,1)] text-white py-3 rounded-lg hover:bg-[rgb(80,200,220) disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[rgb(56,165,179,1)] mr-4"
-        >Back
-        </button>
+      <div class="flex justify-between">
+        <div class="w-full">
+          <app-customized-button
+            text="Back"
+            className="bg-back-btn hover:bg-back-btn"
+            (buttonClick)="backToMenu()"
+          ></app-customized-button>
+        </div>
 
-         <button
-          [disabled]="isPlaying"
-          (click)="backToMenu()"
-          class="btn-action md:w-2/3 bg-yellow-500 text-gray-900 py-2 rounded-lg hover:bg-yellow-400 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-yellow-500"
-        >Reset
-        </button>
+        <div class="w-full text-right">
+          <app-customized-button
+            text="Reset"
+            className="bg-yellow-500 hover:bg-yellow-400"
+            [disabled]="isPlaying"
+            (buttonClick)="backToMenu()"
+          ></app-customized-button>
+        </div>
       </div>
     </div>
   </div>

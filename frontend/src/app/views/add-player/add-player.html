@@ -26,19 +26,18 @@
         </div>
       </div>
 
-      <div class="space-y-4 mt-6">
-        <button
-          (click)="savePlayer()"
+      <div>
+        <app-customized-button
+          text="Start Game"
+          className="bg-green-600 hover:bg-green-700"
           [disabled]="!playerName || playerName.trim() === ''"
-          class="btn-action w-full md:w-2/3 mx-auto bg-green-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-green-700 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-green-600"
-        >
-          Start Game
-        </button>
-        <button
-          (click)="backToMenu()"
-          class="btn-action w-full md:w-2/3 mx-auto bg-[rgb(56,165,179,1)] text-white font-bold py-3 px-6 rounded-lg hover:bg-[rgb(80,200,220)] transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-        >Back
-        </button>
+          (buttonClick)="savePlayer()"
+        ></app-customized-button>
+        <app-customized-button
+          text="Back"
+          className="bg-back-btn hover:bg-back-btn"
+          (buttonClick)="backToMenu()"
+        ></app-customized-button>
       </div>
     </div>
   </div>

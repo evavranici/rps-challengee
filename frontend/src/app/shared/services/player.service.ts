@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Player, PlayerStats } from '../../shared/interfaces/player.interface';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { LeaderboardPlayerStats } from '../../views/leaderboard/leaderboard';
 
 @Injectable({
   providedIn: 'root'
