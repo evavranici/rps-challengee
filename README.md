@@ -156,10 +156,15 @@ rps-challengee/
 │   ├── src/main/resources/
 │   └── pom.xml
 ├── frontend/                  # Angular frontend
-│   ├── src/app/
-│   ├── src/assets/
-│   ├── angular.json
-│   └── package.json
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/        # Reusable Angular components
+│   │   │   ├── shared/
+│   │   │   │   ├── interfaces/
+│   │   │   │   ├── pipes/
+│   │   │   │   └── services/
+│   │   │   └── views/             # Feature-specific views/pages
+│   │   └── ...
 ├── Dockerfile
 ├── nginx.conf
 ├── docker-entrypoint.sh
