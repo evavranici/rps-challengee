@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
@@ -17,6 +17,7 @@ import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.inte
   ]
 })
 export class Leaderboard implements OnInit {
+  @Input() showBackBtn: boolean = true;
   leaderboardStats: LeaderboardPlayerStats[] = [];
 
   constructor(
@@ -25,6 +26,7 @@ export class Leaderboard implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    console.log(this.showBackBtn)
     this.leaderboardService.fetchLeaderboardData();
     console.log('Leaderboard component initialized. Displaying data from service.');
   }

@@ -32,6 +32,7 @@
     </div>
 
     <app-customized-button
+      *ngIf="showBackBtn"
       text="Back"
       className="bg-back-btn hover:bg-back-btn-hover"
       (buttonClick)="backToMenu()"

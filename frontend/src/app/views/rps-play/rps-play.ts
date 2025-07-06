@@ -81,26 +81,32 @@ export class RpsPlay implements OnInit, OnDestroy {
       this.player = player;
     });
 
-    this.listenForTabKeyPress();
+    this.listenForKeyPresses();
   }
 
-  listenForTabKeyPress(): void {
+  listenForKeyPresses(): void {
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Tab') {  
         event.preventDefault(); // Prevent default tab behavior to go to the next focusable element
         this.isLeaderboardVisible ? this.hideLeaderboard() : this.showLeaderboard();
       }
     });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {  
+        this.hideLeaderboard()
+      }
+    });
   } 
 
   showLeaderboard(): void {
-    this.isLeaderboardVisible = !this.isLeaderboardVisible;
+    this.isLeaderboardVisible = true;
     this.rpsPlayAreaEl.nativeElement.classList.add('darkened');
   }
 
   hideLeaderboard(): void {
     this.rpsPlayAreaEl.nativeElement.classList.remove('darkened');
-    this.isLeaderboardVisible = !this.isLeaderboardVisible;
+    this.isLeaderboardVisible = false;
   }
 
   ngOnDestroy(): void {
