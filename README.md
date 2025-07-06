@@ -104,13 +104,15 @@ docker run -p 80:80 -p 8080:8080 --name my-rps-app rps-challengee
 
 ## 🌐 Access the Application
 
-🎮 Frontend	            | http://localhost:4200
+🎮 Frontend	                | http://localhost:4200
 
-📊 Prometheus Metrics	  | http://localhost:8080/actuator/prometheus
+📊 Actuator Metrics	        | http://localhost:8080/actuator/metrics (check one specific metric: http://localhost:8080/actuator/player.created.total)
 
-🛢️ H2 Console	          | http://localhost:8080/h2-console
+📊 Metrics for Prometheus	  | http://localhost:8080/actuator/prometheus
 
-🧾 Swagger UI	          | http://localhost:8080/swagger-ui/index.html
+🛢️ H2 Console	              | http://localhost:8080/h2-console
+
+🧾 Swagger UI	              | http://localhost:8080/swagger-ui/index.html
 
 ```bash
 H2 Console Settings:
