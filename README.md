@@ -2,7 +2,7 @@
 
 A full-stack **Rock, Paper, Scissors** game featuring a **Spring Boot** backend, an **Angular** frontend, an **H2 Database**, and **Docker** containerization.
 
-Includes **player management**, **game logic**, a **leaderboard**, and **monitoring setup** with Prometheus.
+Includes **players management**, **game logic**, a **leaderboard**, and **monitoring setup** with Prometheus.
 
 ## 📚 Table of Contents
 
@@ -27,7 +27,7 @@ Includes **player management**, **game logic**, a **leaderboard**, and **monitor
 - **Classic RPS Gameplay**: Play Rock, Paper, Scissors against a computer opponent.
 - **Dynamic Leaderboard**: Ranked by [Wilson Score Interval](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval).
 - **Responsive UI**: Built with Angular and Tailwind CSS, with building reusable components in mind.
-- **Keyboard Shortcut**: Press **`TAB`** to view the leaderboard while playing.
+- **Keyboard Shortcut**: Press **`TAB`** to view the leaderboard while playing, a touch to the classic gaming.
 - **API Documentation**: Swagger/OpenAPI UI available.
 - **H2 Database Console**: Inspect the in-memory database via browser.
 - **Metrics Monitoring**: Via [Micrometer](https://micrometer.io/) and [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/html/) with Prometheus integration.
@@ -44,7 +44,7 @@ Includes **player management**, **game logic**, a **leaderboard**, and **monitor
 - [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
 - [Micrometer](https://micrometer.io/)
 - [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/html/)
-- [Lombok](https://projectlombok.org/)
+- [Lombok](https://projectlombok.org/) for auto generated Getters/Setters
 - [Swagger/OpenAPI](https://swagger.io/)
 
 ### 🎨 Frontend
@@ -52,7 +52,6 @@ Includes **player management**, **game logic**, a **leaderboard**, and **monitor
 - [Angular 20+](https://angular.io/)
 - [TypeScript](https://www.typescriptlang.org/)
 - [Tailwind CSS](https://tailwindcss.com/)
-- [Angular Signals](https://angular.dev/guide/signals)
 
 ### 🐳 Containerization & Monitoring
 
