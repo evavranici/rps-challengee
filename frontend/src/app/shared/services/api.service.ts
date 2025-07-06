@@ -9,13 +9,13 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class ApiService {
   private backendApiPrefix = 'http://localhost:8080/api';
 
-   // Use BehaviorSubject to make current player observable
+   // BehaviorSubject to make current player observable
   private _currentPlayer = new BehaviorSubject<Player | null>(null);
   readonly currentPlayer$ = this._currentPlayer.asObservable();
 
   constructor(private http: HttpClient) { }
 
-   setCurrentPlayer(player: Player | null): void {
+  setCurrentPlayer(player: Player | null): void {
     this._currentPlayer.next(player);
   }
 
@@ -53,7 +53,7 @@ export class ApiService {
     return this.http.put<Player>(`${this.backendApiPrefix}/players/${id}/stats`, stats);
   }
 
-  resetPlayerScore(id: number): Observable<any> {
+  resetPlayerStats(id: number): Observable<any> {
     return this.http.put(`${this.backendApiPrefix}/players/${id}/reset-stats`, {});
   }
 

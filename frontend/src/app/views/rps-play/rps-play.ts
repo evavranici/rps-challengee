@@ -117,10 +117,9 @@ export class RpsPlay implements OnInit, OnDestroy {
           playerData.stats = { playerScore: 0, computerScore: 0, playerWins: 0, computerWins: 0, totalRounds: 0, playerHistory: [], computerHistory: [] };
         }
         this.apiService.setCurrentPlayer(playerData);
-        this.computerHistory = [];
         this.updateUIDisplay();
       },
-      error: (error) => {
+      error: () => {
         this.router.navigate(['/']);
       }
     });
@@ -327,16 +326,15 @@ export class RpsPlay implements OnInit, OnDestroy {
     gameArenaEl.style.transform = 'scale(1)'; // Reset game arena scale
   }
 
-  resetPlayerScore(): void {
-    if (!this.player || this.player.id === null) return;
-
-    if (confirm('Are you sure you want to reset all your stats for this player?')) {
-      this.apiService.resetPlayerScore(this.player.id).subscribe({
+  resetPlaysStats(): void {
+    if (this.player && this.player.id !== null) {
+      this.apiService.resetPlayerStats(this.player.id).subscribe({
         next: () => {
           this.loadPlayerData();
-          this.computerHistory = [];
+          console.log('Successfuly reset player stats',);
         },
-        error: () => {
+        error: (error) => {
+          console.error('Failed to reset player stats', error);
         }
       });
     }
