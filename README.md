@@ -106,7 +106,11 @@ docker run -p 80:80 -p 8080:8080 --name my-rps-app rps-challengee
 
 🎮 Frontend	                | http://localhost:4200
 
-📊 Actuator Metrics	        | http://localhost:8080/actuator/metrics (check one specific metric: http://localhost:8080/actuator/player.created.total)
+📊 Actuator Metrics	        | http://localhost:8080/actuator/metrics
+
+Check one specific metrics:
+- Nr. of all players created: http://localhost:8080/actuator/player.created.total
+- Nr. of all games played: http://localhost:8080/actuator/player.stats.updated.total
 
 📊 Metrics for Prometheus	  | http://localhost:8080/actuator/prometheus
 
