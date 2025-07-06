@@ -15,6 +15,7 @@ Includes **player management**, **game logic**, a **leaderboard**, and **monitor
   - [🐳 Docker Setup](#-docker-setup)
 - [🏃 Running the Application](#-running-the-application)
 - [🌐 Access the Application](#-access-the-application)
+- [📐 UI/UX Design](#-uiux-design)
 - [📡 API Endpoints](#-api-endpoints)
 - [🕹️ How to Play](#️-how-to-play)
 - [📁 Project Structure](#-project-structure)
@@ -25,7 +26,7 @@ Includes **player management**, **game logic**, a **leaderboard**, and **monitor
 - **Player Management**: Create and reset player profiles.
 - **Classic RPS Gameplay**: Play Rock, Paper, Scissors against a computer opponent.
 - **Dynamic Leaderboard**: Ranked by [Wilson Score Interval](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval).
-- **Responsive UI**: Built with Angular and Tailwind CSS.
+- **Responsive UI**: Built with Angular and Tailwind CSS, with building reusable components in mind.
 - **Keyboard Shortcut**: Press **`TAB`** to view the leaderboard while playing.
 - **API Documentation**: Swagger/OpenAPI UI available.
 - **H2 Database Console**: Inspect the in-memory database via browser.
@@ -122,6 +123,13 @@ Password: myverystrongpassword
 http://localhost:9090
 
 Ensure prometheus.yml scrapes host.docker.internal:8080.
+
+## 📐 UI/UX Design
+This project includes a Figma file for the color palette of the reusable button UI component.
+
+Figma Link: [RPS Figma Design](https://www.figma.com/design/QUTgI6n68WYZdcKe7c2kzd/RPS-Figma?node-id=0-1&m=dev&t=b0azLlaDYP928T2r-1).
+
+This design helps maintain UI consistency and can be extended for future visual enhancements.
 
 ## 📡 API Endpoints
 
