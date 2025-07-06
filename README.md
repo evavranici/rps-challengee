@@ -1,224 +1,200 @@
-Rock, Paper, Scissors Game
-A full-stack Rock, Paper, Scissors game featuring a Spring Boot backend, an Angular frontend, an H2 Database, and Docker containerisation. This application includes players management, game logic, a leaderboard, and basic metrics/monitoring setup with Prometheus.
+# 🎮 Rock, Paper, Scissors Game
 
-Table of Contents
-Features
+A full-stack **Rock, Paper, Scissors** game featuring a **Spring Boot** backend, an **Angular** frontend, an **H2 Database**, and **Docker** containerization.
 
-Technologies Used
+Includes **players management**, **game logic**, a **leaderboard**, and **monitoring setup** with Prometheus.
 
-Getting Started
+## 📚 Table of Contents
 
-Prerequisites
+- [✨ Features](#-features)
+- [🛠 Technologies Used](#-technologies-used)
+- [🚀 Getting Started](#-getting-started)
+  - [✅ Prerequisites](#-prerequisites)
+  - [⚙️ Backend Setup](#-backend-setup)
+  - [🎨 Frontend Setup](#-frontend-setup)
+  - [🐳 Docker Setup](#-docker-setup)
+- [🏃 Running the Application](#-running-the-application)
+- [🌐 Access the Application](#-access-the-application)
+- [📐 UI/UX Design](#-uiux-design)
+- [📡 API Endpoints](#-api-endpoints)
+- [🕹️ How to Play](#️-how-to-play)
+- [📁 Project Structure](#-project-structure)
+- [🔮 Future Enhancements](#-future-enhancements)
 
-Backend Setup
+## ✨ Features
 
-Frontend Setup
+- **Player Management**: Create and reset player profiles.
+- **Classic RPS Gameplay**: Play Rock, Paper, Scissors against a computer opponent.
+- **Dynamic Leaderboard**: Ranked by [Wilson Score Interval](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval).
+- **Responsive UI**: Built with Angular and Tailwind CSS, with building reusable components in mind.
+- **Keyboard Shortcut**: Press **`TAB`** to view the leaderboard while playing, a touch to the classic gaming.
+- **API Documentation**: Swagger/OpenAPI UI available.
+- **H2 Database Console**: Inspect the in-memory database via browser.
+- **Metrics Monitoring**: Via [Micrometer](https://micrometer.io/) and [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/html/) with Prometheus integration.
+- **Dockerized Deployment**: Single Docker container for backend & frontend.
+- **Intelligent Caching**: Angular Signals for caching players and leaderboard data.
 
-Docker Setup
+## 🛠 Technologies Used
 
-Running the Application
+### 🔧 Backend
 
-API Endpoints
+- [Spring Boot](https://spring.io/projects/spring-boot)
+- [Maven](https://maven.apache.org/)
+- [H2 Database](https://www.h2database.com/)
+- [Spring Data JPA](https://spring.io/projects/spring-data-jpa)
+- [Micrometer](https://micrometer.io/)
+- [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/html/)
+- [Lombok](https://projectlombok.org/) for auto generated Getters/Setters
+- [Swagger/OpenAPI](https://swagger.io/)
 
-How to Play
+### 🎨 Frontend
 
-Project Structure
+- [Angular 20+](https://angular.io/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
 
-Future Enhancements
+### 🐳 Containerization & Monitoring
 
-1. Features
-Player Management: Create and reset player profiles.
+- [Docker](https://www.docker.com/)
+- [Prometheus](https://prometheus.io/)
 
-Classic RPS Gameplay: Play Rock, Paper, Scissors against a computer opponent.
+## 🚀 Getting Started
 
-Dynamic Leaderboard: View top players ranked by their performance (Wilson Score Interval). It can also be accessed while in the game playground by pressing the TAB key (for an authentic gamer experience 🎮 ).
+### ✅ Prerequisites
 
-Responsive UI: Built with Angular and Tailwind CSS to enhance the gamer experience.
+Ensure you have the following installed:
 
-API Documentation: Comprehensive API documentation provided by Swagger/OpenAPI.
+- Java Development Kit (JDK) 17+
+- Maven 3.8.5+
+- Node.js 18+ & npm 8+ (or Yarn)
+- Angular CLI 17+ → `npm install -g @angular/cli`
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- [Git](https://git-scm.com/)
 
-H2 Database Console: Web-based UI for inspecting the in-memory H2 database.
+### ⚙️ Backend Setup
 
-Application Metrics & Monitoring: The Spring Boot backend is instrumented with Micrometer to collect various application metrics, such as game round counts, player choices, API call durations, and system health. These metrics are automatically exposed via Spring Boot Actuator's /actuator/prometheus endpoint in a Prometheus-compatible format, allowing an external Prometheus server to scrape and store them. This setup provides insights into application performance and usage patterns.
-
-Containerized Deployment: Docker setup for easy and consistent deployment of the entire application (backend + frontend).
-
-Intelligent Caching: Frontend services use Angular Signals to cache players and leaderboard data, reducing redundant API calls.
-
-2. Technologies Used
-Backend:
-
-Spring Boot: Framework for building robust Java applications.
-
-Maven: Dependency management and build automation.
-
-H2 Database: In-memory database for player and game data.
-
-Spring Data JPA: For database interaction.
-
-Spring Boot Actuator & Micrometer: For exposing application metrics.
-
-Lombok: Annotations to effortlessly generate boilerplate code like getters/setters, making Java cleaner.
-
-Swagger/OpenAPI: For API documentation.
-
-Frontend:
-
-Angular 20+: Frontend framework for building dynamic single-page applications.
-
-TypeScript: Superset of JavaScript for type safety.
-
-Tailwind CSS: Utility-first CSS framework for rapid UI development.
-
-Angular Signals: For reactive state management and efficient change detection.
-
-Containerization & Monitoring:
-
-Docker: For containerizing the entire application.
-
-Prometheus: (External) For monitoring application metrics.
-
-3. Getting Started
-Follow these instructions to get a copy of the project up and running on your local machine.
-
-Prerequisites
-Before you begin, ensure you have the following installed:
-
-Java Development Kit (JDK) 17+
-
-Maven 3.8.5+
-
-Node.js 18+ & npm 8+ (or Yarn)
-
-Angular CLI 17+ (npm install -g @angular/cli)
-
-Docker Desktop - Ensure it's running before proceeding with Docker commands.
-
-Git
-
-Backend Setup
-Navigate to the backend directory:
-
+```bash
 cd rps-challengee/backend
-Build the Spring Boot application:
-
 mvn clean install
-This will compile the Java code and package it into a .jar file in the target/ directory.
+```
 
-Frontend Setup
-Navigate to the frontend directory:
+### 🎨 Frontend Setup
 
+```bash
 cd rps-challengee/frontend
-Install frontend dependencies:
-
 npm install
-Build the Angular application:
-
 npm run build
-This will compile the Angular code and place the static assets in the dist/ directory. These assets will be served by Nginx inside the Docker container.
+```
 
-Docker Setup
-Ensure you are in the root directory of the rps-challengee project (where Dockerfile and nginx.conf are located).
+### 🐳 Docker Setup
 
-Build the Docker image:
-This command will build a multi-stage Docker image that first compiles the backend, then packages both the backend JAR and the frontend static files with Nginx.
-
+```bash
 docker build --no-cache -t rps-challengee .
-Troubleshooting Dockerfile issues: If you encounter errors like unknown instruction: {\rtf1...} or FROM requires either one or three arguments, ensure your Dockerfile and nginx.conf are plain text files (not RTF) and that comments are on their own lines.
+```
+Troubleshooting:
+Make sure Dockerfile, nginx.conf, and docker-entrypoint.sh are in plain text format (not RTF).
+Avoid inline comments — place comments on separate lines.
 
-Running the Application
-Run the Docker container:
-This command starts the container, mapping port 80 (for Nginx/frontend) and port 8080 (for Spring Boot backend/metrics) from the container to your host machine.
+## 🏃 Running the Application
 
+```bash
 docker run -p 80:80 -p 8080:8080 --name my-rps-app rps-challengee
+```
 
-Conflict error: If you get a Conflict error, it means a container with that name already exists. Stop and remove it:
+## 🌐 Access the Application
 
-docker stop my-rps-app
-docker rm my-rps-app
+```bash
+🎮 Frontend	            | http://localhost:4200
+📊 Prometheus Metrics	  | http://localhost:8080/actuator/prometheus
+🛢️ H2 Console	          | http://localhost:8080/h2-console
+🧾 Swagger UI	          | http://localhost:8080/swagger-ui/index.html
+```
 
-Then, retry the docker run command.
+```bash
+H2 Console Settings:
 
-Container Exits Immediately: If docker ps shows no running containers after docker run, it means the container started and then exited. This was addressed by using a docker-entrypoint.sh script to manage both Nginx and Java processes. Ensure your Dockerfile and docker-entrypoint.sh are correctly configured as per our previous discussions.
+JDBC URL: jdbc:h2:mem:testdb
+User: sa
+Password: myverystrongpassword
+```
 
-Access the Application:
-
-Frontend: Open your web browser and navigate to:
-http://localhost:4200
-
-Backend Metrics (for Prometheus):
-http://localhost:8080/actuator/prometheus
-
-H2 Database Console:
-http://localhost:8080/h2-ui
-
-JDBC URL: jdbc:h2:~/test
-
-User/Password: sa/myverystrongpassword
-
-Swagger/OpenAPI UI:
-http://localhost:8080/swagger-ui
-
-Access Prometheus UI (if running separately):
-If you have a separate Prometheus server running (e.g., via Homebrew or another Docker container), its UI is usually at:
+📍 Prometheus UI (if running separately):
 http://localhost:9090
-Ensure your Prometheus prometheus.yml is configured to scrape host.docker.internal:8080 for your rps-challengee backend metrics.
 
-4. API Endpoints
-The backend exposes the following primary API endpoints:
+Ensure prometheus.yml scrapes host.docker.internal:8080.
 
-GET /player: Retrieves a summary list of all registered players (id, name, icon).
+## 📐 UI/UX Design
+This project includes a Figma file for the color palette of the reusable button UI component.
 
-POST /player: Creates a new player.
+Figma Link: [RPS Figma Design](https://www.figma.com/design/QUTgI6n68WYZdcKe7c2kzd/RPS-Figma?node-id=0-1&m=dev&t=b0azLlaDYP928T2r-1).
 
-POST /player/reset/{playerId}: Resets a player's game statistics.
+This design helps maintain UI consistency and can be extended for future visual enhancements.
 
-GET /game/play: Initiates a game round (requires player choice and player ID).
+## 📡 API Endpoints
 
-GET /leaderboard: Retrieves the leaderboard statistics (ranked by Wilson Score Interval).
+```bash
+GET	/player	List all players
+POST	/player	Create a new player
+POST	/player/reset/{playerId}	Reset a player's stats
+GET	/game/play?playerId=...&choice=...	Play a game round
+GET	/leaderboard	Leaderboard by Wilson Score
+```
 
-/actuator/prometheus: Exposes Prometheus-compatible metrics for the Spring Boot application.
+## 🕹️ How to Play
 
-/swagger-ui.html (or /swagger-ui/index.html): The interactive Swagger/OpenAPI documentation UI.
+Open http://localhost:4200
 
-5. How to Play
-Access the game at http://localhost:4200
+Create a player
 
-Create a Player: If you don't have a player, use the "Create Player" option to set up your profile.
+Play Rock, Paper, Scissors
 
-Start Game: Select your player and begin playing Rock, Paper, Scissors against the computer.
+View the leaderboard
 
-View Leaderboard: Press the TAB key (or click a "View Leaderboard" button if available) to open the leaderboard popup. You can also navigate directly to the leaderboard view if your routing supports it.
+Press TAB (gamer shortcut)
 
-6. Project Structure
+Or click "View Leaderboard"
+
+## 📁 Project Structure
+
+```bash
 rps-challengee/
-├── backend/
-│   ├── src/main/java/...       # Spring Boot Java source code
-│   ├── src/main/resources/     # Spring Boot configuration (application.properties/yml)
-│   ├── pom.xml                 # Maven build file
-│   └── ...
-├── frontend/
-│   ├── src/app/...             # Angular application source code
-│   ├── src/assets/...          # Frontend assets
-│   ├── src/index.html          # Angular main HTML
-│   ├── angular.json            # Angular project configuration
-│   ├── package.json            # Frontend dependencies
-│   ├── tailwind.config.js      # Tailwind CSS configuration
-│   └── ...
-├── Dockerfile                  # Defines the Docker image build process
-├── nginx.conf                  # Nginx configuration for serving frontend and proxying backend
-├── docker-entrypoint.sh        # Script to manage multiple processes in Docker container
-└── README.md                   # This file
+├── backend/                   # Spring Boot backend
+│   ├── src/main/java/
+│   ├── src/main/resources/
+│   └── pom.xml
+├── frontend/                  # Angular frontend
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── components/        # Reusable Angular components
+│   │   │   ├── shared/
+│   │   │   │   ├── interfaces/
+│   │   │   │   ├── pipes/
+│   │   │   │   └── services/
+│   │   │   └── views/             # Feature-specific views/pages
+│   │   └── ...
+├── Dockerfile
+├── nginx.conf
+├── docker-entrypoint.sh
+└── README.md
+```
 
-7. Future Enhancements
-User Authentication: Implement proper user login/registration.
+## 🔮 Future Enhancements
 
-Persistent Database: Configure H2 to save data to a file, or migrate to a production-grade database (e.g., PostgreSQL, MySQL).
+🔐 User Authentication
 
-Grafana Dashboards: Create rich dashboards in Grafana to visualize game metrics from Prometheus.
+💾 Persistent Database (e.g., PostgreSQL)
 
-Improved Computer AI: Implement more sophisticated AI for the computer opponent.
+📈 Grafana Dashboards
 
-More Game Modes: Add best-of-three, tournaments, etc.
+🧠 Smarter Computer AI
 
-Custom Player Icons: Allow users to upload or select custom icons.
+🏆 More Game Modes (Best of 3, Tournaments)
+
+🎨 Custom Player Icons
+
+
+
+
+
+
+
