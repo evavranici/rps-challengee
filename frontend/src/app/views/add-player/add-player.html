@@ -29,13 +29,13 @@
       <div>
         <app-customized-button
           text="Start Game"
-          className="bg-green-600 hover:bg-green-700"
+          className="bg-green-600 hover:bg-green-700 disabled:hover:bg-green-600"
           [disabled]="!playerName || playerName.trim() === ''"
           (buttonClick)="savePlayer()"
         ></app-customized-button>
         <app-customized-button
           text="Back"
-          className="bg-back-btn hover:bg-back-btn"
+          className="bg-back-btn hover:bg-back-btn-hover"
           (buttonClick)="backToMenu()"
         ></app-customized-button>
       </div>

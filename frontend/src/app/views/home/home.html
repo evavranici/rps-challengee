@@ -24,7 +24,7 @@
 
       <app-customized-button
         text="View Leaderboard"
-        className="bg-purple-600 hover:bg-purple-700"
+        className="bg-purple-600 hover:bg-purple-700 disabled:hover:bg-purple-600"
         (buttonClick)="players.length > 0 ? viewLeaderboard() : null"
         [disabled]="players.length === 0"
       ></app-customized-button>
