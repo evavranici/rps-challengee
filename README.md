@@ -109,12 +109,13 @@ docker run -p 80:80 -p 8080:8080 --name my-rps-app rps-challengee
 📊 Actuator Metrics	        | http://localhost:8080/actuator/metrics
 
 Check one specific metrics:
-- Nr. of all players created: http://localhost:8080/actuator/player.created.total
-- Nr. of all games played: http://localhost:8080/actuator/player.stats.updated.total
+- Nr. of all players created: http://localhost:8080/actuator/metrics/player.created.total
+- Nr. of all games played: http://localhost:8080/actuator/metrics/player.stats.updated.total
+- Nr. of total resets by players: http://localhost:8080/actuator/metrics/player.stats.reset.total
 
 📊 Metrics for Prometheus	  | http://localhost:8080/actuator/prometheus
 
-🛢️ H2 Console	              | http://localhost:8080/h2-console
+🛢️ H2 Console	              | http://localhost:8080/h2-ui
 
 🧾 Swagger UI	              | http://localhost:8080/swagger-ui/index.html
 
@@ -201,6 +202,8 @@ rps-challengee/
 🏆 More Game Modes (Best of 3, Tournaments)
 
 🎨 Custom Player Icons
+
+📱 Make UI Mobile friendly
 
 
 
