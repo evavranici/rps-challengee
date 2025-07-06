@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Player } from '../../shared/interfaces/player.interface';
-import { ApiService } from '../../shared/services/api.service';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
+import { PlayerService } from '../../shared/services/player-service';
 
 @Component({
   selector: 'app-home',
@@ -23,22 +23,11 @@ export class Home implements OnInit {
 
   constructor(
     private router: Router,
-    private apiService: ApiService,
+    public playerService: PlayerService,
   ) { }
 
   ngOnInit(): void {
-    this.fetchPlayers();
-  }
-
-  fetchPlayers(): void {
-    this.apiService.getAllPlayers().subscribe({
-      next: (data) => {
-        this.players = data;
-      },
-      error: (error) => { 
-        console.error('Error fetching players:', error);
-      }
-    });
+    this.playerService.fetchPlayers();
   }
 
   selectPlayer(player: Player): void {

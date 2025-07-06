@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Player } from '../../shared/interfaces/player.interface';
 import { ApiService } from '../../shared/services/api.service';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
+import { PlayerService } from '../../shared/services/player-service';
 
 @Component({
   selector: 'app-add-player',
@@ -26,6 +27,7 @@ export class AddPlayer {
   constructor(
     private router: Router,
     private apiService: ApiService,
+    private playerService: PlayerService,
   ) { }
 
   savePlayer(): void {
@@ -51,6 +53,7 @@ export class AddPlayer {
 
     this.apiService.createPlayer(newPlayer).subscribe({
       next: (createdPlayer) => {
+      this.playerService.markPlayersStale();
         this.router.navigate(['/rps-play', createdPlayer.id]);
       },
       error: (error) => {
