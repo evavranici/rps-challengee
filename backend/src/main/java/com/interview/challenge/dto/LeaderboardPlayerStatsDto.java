@@ -1,9 +1,14 @@
 package com.interview.challenge.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Schema(description = "Data Transfer Object for Leaderboard Player Stats displayed on the Leaderboard.")
 public class LeaderboardPlayerStatsDto {
+    // getters and setters
     @Schema(description = "Unique identifier of the player", example = "1")
     private Long id;
 
@@ -32,46 +37,4 @@ public class LeaderboardPlayerStatsDto {
         this.score = score;
     }
 
-    // getters and setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-    public void setIcon(String icon) {
-        this.icon = icon;
-    }
-
-    public double getWinPercentage() {
-        return winPercentage;
-    }
-    public void setWinPercentage(double winPercentage) {
-        this.winPercentage = winPercentage;
-    }
-
-    public int getGamesPlayed() {
-        return gamesPlayed;
-    }
-    public void setGamesPlayed(int gamesPlayed) {
-        this.gamesPlayed = gamesPlayed;
-    }
-
-    public double getScore() {
-        return score;
-    }
-    public void setScore(double score) {
-        this.score = score;
-    }
 }

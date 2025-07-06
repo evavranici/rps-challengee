@@ -7,10 +7,15 @@ import com.interview.challenge.shared.GameChoiceConverter;
 import java.util.ArrayList;
 import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @Embeddable // marking this class as embeddable within another entity
 @Schema(description = "Detailed game statistics for a player")
 public class PlayerStats {
+    // getters and setters
     @Schema(description = "The player's current score (points for wins)", example = "1")
     private int playerScore = 0;
 
@@ -37,53 +42,4 @@ public class PlayerStats {
     // default constructor (required by JPA)
     public PlayerStats() {}
 
-    // getters and setters
-    public int getPlayerScore() {
-        return playerScore;
-    }
-    public void setPlayerScore(int playerScore) {
-        this.playerScore = playerScore;
-    }
-
-    public int getComputerScore() {
-        return computerScore;
-    }
-    public void setComputerScore(int computerScore) {
-        this.computerScore = computerScore;
-    }
-
-    public int getPlayerWins() {
-        return playerWins;
-    }
-    public void setPlayerWins(int playerWins) {
-        this.playerWins = playerWins;
-    }
-
-    public int getComputerWins() {
-        return computerWins;
-    }
-    public void setComputerWins(int computerWins) {
-        this.computerWins = computerWins;
-    }
-
-    public List<String> getPlayerHistory() {
-        return playerHistory;
-    }
-    public void setPlayerHistory(List<String> playerHistory) {
-        this.playerHistory = playerHistory;
-    }
-
-    public List<String> getComputerHistory() {
-        return computerHistory;
-    }
-    public void setComputerHistory(List<String> computerHistory) {
-        this.computerHistory = computerHistory;
-    }
-
-    public int getTotalRounds() {
-        return totalRounds;
-    }
-    public void setTotalRounds(int totalRounds) {
-        this.totalRounds = totalRounds;
-    }
 }
