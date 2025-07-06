@@ -9,6 +9,5 @@ import java.util.Optional;
 public interface PlayerRepository extends JpaRepository<Player, Long> {
     // Spring Data JPA automatically provides methods like save(), findById(), findAll(), delete()
 
-    // You can add custom query methods if needed, e.g.,
     Optional<Player> findByName(String name);
 }

@@ -1,6 +1,7 @@
 package com.interview.challenge.player;
 
-import com.interview.challenge.leaderboard.LeaderboardPlayerStatsDto;
+import com.interview.challenge.dto.LeaderboardPlayerStatsDto;
+import com.interview.challenge.dto.PlayerSimplifiedDto;
 import com.interview.challenge.player.stats.PlayerStats;
 import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +61,10 @@ public class PlayerController {
             description = "Retrieves a list of all existing players/pilots in the game.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of players",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Player.class))) // Use Player.class for list
+                    schema = @Schema(implementation = PlayerSimplifiedDto.class))) // Use Player.class for list
     @GetMapping
-    public ResponseEntity<List<Player>> getAllPlayers() {
-        List<Player> players = playerService.getAllPlayers();
+    public ResponseEntity<List<PlayerSimplifiedDto>> getAllPlayers() {
+        List<PlayerSimplifiedDto> players = playerService.getAllPlayers();
         return ResponseEntity.ok(players);
     }
 

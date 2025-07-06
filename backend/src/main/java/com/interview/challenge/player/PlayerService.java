@@ -1,5 +1,6 @@
 package com.interview.challenge.player;
 
+import com.interview.challenge.dto.PlayerSimplifiedDto;
 import com.interview.challenge.player.stats.PlayerStats;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PlayerService {
@@ -29,8 +31,13 @@ public class PlayerService {
         this.playerStatsResetCounter = meterRegistry.counter("player.stats.reset.total", "source", "api");
     }
 
-    public List<Player> getAllPlayers() {
-        return playerRepository.findAll();
+    public List<PlayerSimplifiedDto> getAllPlayers() {
+        List<Player> players = playerRepository.findAll();
+
+        // Map Player entities to PlayerSummaryDTOs
+        return players.stream()
+            .map(player -> new PlayerSimplifiedDto(player.getId(), player.getName(), player.getIcon()))
+            .collect(Collectors.toList());
     }
 
     public Optional<Player> getPlayerById(Long id) {
