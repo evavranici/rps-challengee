@@ -55,10 +55,6 @@ public class PlayerService {
         return createdPlayer;
     }
 
-    public void deletePlayer(Long id) {
-        playerRepository.deleteById(id);
-    }
-
     public Optional<Player> getPlayerByName(String name) {
         return playerRepository.findByName(name);
     }

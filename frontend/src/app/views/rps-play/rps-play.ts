@@ -331,6 +331,7 @@ export class RpsPlay implements OnInit, OnDestroy {
       this.apiService.resetPlayerStats(this.player.id).subscribe({
         next: () => {
           this.loadPlayerData();
+          this.leaderboardService.markLeaderboardStale()
           console.log('Successfuly reset player stats',);
         },
         error: (error) => {

@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/api/players")
 @CrossOrigin(origins = "http://localhost:4200")
-@Tag(name = "Player Management", description = "Endpoints for creating and retrieving players (pilots)")
+@Tag(name = "Player Management", description = "Endpoints for creating and retrieving players")
 public class PlayerController {
 
     private final PlayerService playerService;
@@ -58,7 +58,7 @@ public class PlayerController {
     }
 
     @Operation(summary = "Get all registered players",
-            description = "Retrieves a list of all existing players/pilots in the game.")
+            description = "Retrieves a list of all existing players in the game.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of players",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = PlayerSimplifiedDto.class))) // Use Player.class for list
@@ -69,7 +69,7 @@ public class PlayerController {
     }
 
     @Operation(summary = "Create a new player",
-            description = "Registers a new player (pilot) in the game with a unique name and an optional icon.")
+            description = "Registers a new player in the game with a unique name and an optional icon.")
     @ApiResponse(responseCode = "201", description = "Player created successfully",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = Player.class)))
@@ -104,17 +104,6 @@ public class PlayerController {
             System.err.println("An unexpected error occurred while updating player stats for ID: " + id + " - " + e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
-    }
-
-    // Helper class for the update stats request body
-    public static class PlayerStatsUpdateRequest {
-        private int wins;
-        private int gamesPlayed;
-
-        public int getWins() { return wins; }
-        public void setWins(int wins) { this.wins = wins; }
-        public int getGamesPlayed() { return gamesPlayed; }
-        public void setGamesPlayed(int gamesPlayed) { this.gamesPlayed = gamesPlayed; }
     }
 
     @GetMapping("/leaderboard-stats")
