@@ -203,6 +203,8 @@ rps-challengee/
 
 🎨 Custom Player Icons
 
+📱 Make UI Mobile friendly
+
 
 
 
