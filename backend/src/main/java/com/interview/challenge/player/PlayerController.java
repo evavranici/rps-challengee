@@ -32,36 +32,12 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
-    @Operation(summary = "Get player by ID", description = "Retrieves a single player's details by their ID.")
-    @ApiResponse(responseCode = "200", description = "Player found")
-    @ApiResponse(responseCode = "404", description = "Player not found")
-    @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayerById(@Parameter(description = "ID of the player to retrieve", required = true) @PathVariable Long id) {
-        return playerService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @Operation(summary = "Reset player's score",
-            description = "Resets the wins and games played for a specific player to zero. " +
-                    "Acting as a 'new' player for ranking purposes.")
-    @ApiResponse(responseCode = "200", description = "Player score reset successfully")
-    @ApiResponse(responseCode = "404", description = "Player not found")
-    @PutMapping("/{id}/reset-stats") // Use PUT as it's an update
-    public ResponseEntity<Player> resetPlayerStats(@Parameter(description = "ID of the player to reset score for", required = true) @PathVariable Long id) {
-        try {
-            Player resetPlayer = playerService.resetPlayerStats(id);
-            return ResponseEntity.ok(resetPlayer);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
     @Operation(summary = "Get all registered players",
             description = "Retrieves a list of all existing players in the game.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved list of players",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = PlayerSimplifiedDto.class))) // Use Player.class for list
+                    schema = @Schema(implementation = PlayerSimplifiedDto.class)))
+    @ApiResponse(responseCode = "404", description = "Players not found")
     @GetMapping
     public ResponseEntity<List<PlayerSimplifiedDto>> getAllPlayers() {
         List<PlayerSimplifiedDto> players = playerService.getAllPlayers();
@@ -88,6 +64,22 @@ public class PlayerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdPlayer);
     }
 
+    @Operation(summary = "Get player by ID", description = "Retrieves a single player's details by their ID.")
+    @ApiResponse(responseCode = "200", description = "Player found")
+    @ApiResponse(responseCode = "404", description = "Player not found")
+    @GetMapping("/{id}")
+    public ResponseEntity<Player> getPlayerById(@Parameter(description = "ID of the player to retrieve", required = true) @PathVariable Long id) {
+        return playerService.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @Operation(summary = "Update player's stats", description = "Update a player's stats from a game round.")
+    @ApiResponse(responseCode = "201", description = "Update stats successfully",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = PlayerStats.class)))
+    @ApiResponse(responseCode = "400", description = "Invalid player stats data provided",
+            content = @Content(mediaType = "text/plain"))
     @PutMapping("/{id}/stats")
     public ResponseEntity<Player> updatePlayerStats(
             @PathVariable Long id,
@@ -106,6 +98,26 @@ public class PlayerController {
         }
     }
 
+    @Operation(summary = "Reset player's score",
+            description = "Resets the wins and games played for a specific player to zero. " +
+                    "Acting as a 'new' player for ranking purposes.")
+    @ApiResponse(responseCode = "200", description = "Player score reset successfully")
+    @ApiResponse(responseCode = "404", description = "Player not found")
+    @PutMapping("/{id}/reset-stats") // Use PUT bc it's an update
+    public ResponseEntity<Player> resetPlayerStats(@Parameter(description = "ID of the player to reset score for", required = true) @PathVariable Long id) {
+        try {
+            Player resetPlayer = playerService.resetPlayerStats(id);
+            return ResponseEntity.ok(resetPlayer);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "Get Leaderboard",
+            description = "Retrieves the Leaderboard by Wilson Score.")
+    @ApiResponse(responseCode = "200", description = "Successfully retrieved leaderboard",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = LeaderboardPlayerStatsDto.class)))
     @GetMapping("/leaderboard-stats")
     public List<LeaderboardPlayerStatsDto> getDashboardStats() {
         List<Player> players = playerService.findAll();
