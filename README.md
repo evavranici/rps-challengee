@@ -144,11 +144,12 @@ This design helps maintain UI consistency and can be extended for future visual 
 ## 📡 API Endpoints
 
 ```bash
-GET	/player	List all players
-POST	/player	Create a new player
-POST	/player/reset/{playerId}	Reset a player's stats
-GET	/game/play?playerId=...&choice=...	Play a game round
-GET	/leaderboard	Leaderboard by Wilson Score
+GET	/api/players	List all players
+POST /api/players	Create a new player
+GET	/api/players/{id}	A player by id
+GET	/api/players/leaderboard-stats	Leaderboard by Wilson Score
+PUT	/api/players{id}/stats Update a player's stats from a game round
+PUT	/api/players/{id}/reset-stats	Reset a player's stats
 ```
 
 ## 🕹️ How to Play
@@ -191,7 +192,7 @@ rps-challengee/
 
 ## 🔮 Future Enhancements
 
-🔐 User Authentication
+🔐 User Authentication for Login & delete
 
 💾 Persistent Database (e.g., PostgreSQL)
 
