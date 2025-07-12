@@ -23,14 +23,14 @@
       <div class="flex justify-between items-center mb-6 bg-black bg-opacity-30 p-4 rounded-lg">
         <div class="text-center">
           <div id="player-info" class="flex items-center justify-center space-x-2 mb-2">
-            <span id="player-avatar" class="text-2xl">{{ player?.icon }}</span>
-            <p id="player-name-display" class="font-orbitron text-xl md:text-2xl text-blue-400">{{ player?.name }}</p>
+            <span id="player-avatar" class="text-2xl">{{ (current_player$ | async)?.icon }}</span>
+            <p id="player-name-display" class="font-orbitron text-xl md:text-2xl text-blue-400">{{ (current_player$ | async)?.name }}</p>
           </div>
-          <p id="player-score" class="text-4xl md:text-5xl font-bold">{{ player?.stats?.playerScore }}</p>
+          <p id="player-score" class="text-4xl md:text-5xl font-bold">{{ (current_player$ | async)?.stats?.playerScore }}</p>
         </div>
         <div class="text-center">
           <p class="font-orbitron text-xl md:text-2xl text-red-400">COMPUTER</p>
-          <p id="computer-score" class="text-4xl md:text-5xl font-bold">{{ player?.stats?.computerScore }}</p>
+          <p id="computer-score" class="text-4xl md:text-5xl font-bold">{{ (current_player$ | async)?.stats?.computerScore }}</p>
         </div>
       </div>
 

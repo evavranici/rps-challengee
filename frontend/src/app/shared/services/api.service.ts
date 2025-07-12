@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Player, PlayerStats } from '../interfaces/player.interface';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,20 +9,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class ApiService {
   private backendApiPrefix = 'http://localhost:8080/api';
 
-   // BehaviorSubject to make current player observable
-  private _currentPlayer = new BehaviorSubject<Player | null>(null);
-  readonly currentPlayer$ = this._currentPlayer.asObservable();
-
   constructor(private http: HttpClient) { }
-
-  setCurrentPlayer(player: Player | null): void {
-    this._currentPlayer.next(player);
-  }
-
-  getCurrentPlayer(): Player | null {
-    return this._currentPlayer.getValue();
-  }
-
+  // player related
   getAllPlayers(): Observable<Player[]> {
     return this.http.get<Player[]>(`${this.backendApiPrefix}/players`);
   }
@@ -43,6 +31,7 @@ export class ApiService {
     return this.http.put(`${this.backendApiPrefix}/players/${id}/reset-stats`, {});
   }
 
+  // leaderboard related
   getLeaderboardPlayerStats(): Observable<any> {
     return this.http.get(`${this.backendApiPrefix}/players/leaderboard-stats`);
   }

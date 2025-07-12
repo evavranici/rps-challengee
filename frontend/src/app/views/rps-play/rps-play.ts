@@ -1,8 +1,7 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GameChoice, newStats, Player } from '../../shared/interfaces/player.interface';
-import { ApiService } from '../../shared/services/api.service';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { GameChoice, newStats, Player, PlayerStats } from '../../shared/interfaces/player.interface';
+import { Observable, Subject, takeUntil, firstValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 import { Monitoring } from '../../components/monitoring/monitoring';
@@ -11,10 +10,12 @@ import { CustomizedButton } from '../../components/customized-button/customized-
 import { CardChoice } from '../../components/card-choice/card-choice';
 import { GameConfigService } from '../../shared/services/game-config.service';
 import { select, Store } from '@ngrx/store';
-import { LeaderboardState } from '../../store/leaderboard/leaderboard.state';
+import { RootState } from '../../store/root.state';
 import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
 import * as LeaderboardSelectors from '../../store/leaderboard/leaderboard.selectors';
-import * as LeaderboardActions from '../../store/leaderboard/leaderboard.actions';
+import * as CurrentPlayerActions from '../../store/current-player/current-player.actions';
+import * as CurrentPlayerSelectors from '../../store/current-player/current-player.selectors';
+
 
 const ANIMATION_DELAY_INITIAL = 50;
 const ANIMATION_DELAY_SHOW_MOVES = 500;
@@ -30,75 +31,75 @@ const ANIMATION_DURATION_SHAKE = 500;
     Monitoring,
     Leaderboard,
     CustomizedButton,
-    CardChoice
+    CardChoice,
   ],
   templateUrl: './rps-play.html',
   styleUrls: ['./rps-play.css']
 })
 export class Playground implements OnInit, OnDestroy {
-  playerId: number | null = null;
-  player: Player | null = null;
-  isPlaying: boolean = false;
-  computerHistory: GameChoice[] = [];
-  countdownText: string = '';
-  resultClass: string = '';
-  playerChoiceDisplay: string = '';
-  computerChoiceDisplay: string = '';
-
-  playerWinRate: number = 0;
-  computerWinRate: number = 0;
-  playerMostUsed: string = '-';
-  computerMostUsed: string = '-';
-  playerHistoryDisplay: string = '';
-  computerHistoryDisplay: string = '';
-
-  isLeaderboardVisible: boolean = false;
-  title: string = 'Rock, Paper, Scissors';
-  choices: any;
-  choiceKeys: any;
-
   @ViewChild('gameArena') gameArenaEl!: ElementRef;
   @ViewChild('playerChoiceDisplayEl') playerChoiceDisplayEl!: ElementRef;
   @ViewChild('computerChoiceDisplayEl') computerChoiceDisplayEl!: ElementRef;
   @ViewChild('myHiddenDiv') myHiddenDivEl!: ElementRef;
   @ViewChild('rpsPlayArea') rpsPlayAreaEl!: ElementRef;
   
-  destroy$ = new Subject<void>();
+  isPlaying: boolean = false;
+  countdownText: string = '';
+  resultClass: string = '';
+  playerChoiceDisplay: string = '';
+  computerChoiceDisplay: string = '';
+  playerWinRate: number = 0;
+  computerWinRate: number = 0;
+  playerMostUsed: string = '-';
+  computerMostUsed: string = '-';
+  playerHistoryDisplay: string = '';
+  computerHistoryDisplay: string = '';
+  isLeaderboardVisible: boolean = false;
+  title: string = 'Rock, Paper, Scissors';
+  choices: any;
+  choiceKeys: any;
   
-
   leaderboardData$: Observable<LeaderboardPlayerStats[]>;
   leaderboardIsLoading$: Observable<boolean>;
   leaderboardError$: Observable<any>;
 
+  current_player$: Observable<Player | null>; // Observable for the current player from the store
+  currentPlayerIsLoading$: Observable<boolean>;
+  currentPlayerError$: Observable<any>;
+
+  destroy$ = new Subject<void>();
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private apiService: ApiService,
     private gameConfigService: GameConfigService,
-    private store: Store<LeaderboardState>,
+    private store: Store<RootState>
   ) {
     this.leaderboardData$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardData));
     this.leaderboardIsLoading$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardIsLoading));
     this.leaderboardError$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardError));
+
+    this.current_player$ = this.store.pipe(select(CurrentPlayerSelectors.selectCurrentPlayer));
+    this.currentPlayerIsLoading$ = this.store.pipe(select(CurrentPlayerSelectors.selectCurrentPlayerIsLoading));
+    this.currentPlayerError$ = this.store.pipe(select(CurrentPlayerSelectors.selectCurrentPlayerError));
   }
 
   ngOnInit(): void {
     this.choices = this.gameConfigService.choices;
     this.choiceKeys = this.gameConfigService.choiceKeys;
 
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      let id = params.get('id');
       if (id) {
-        this.playerId = +id;
-        this.loadPlayerData();
+        this.store.dispatch(CurrentPlayerActions.loadCurrentPlayer({ playerId: +id }));
       } else {
-        console.error('No player ID provided in route.');
+        console.error('No player id provided in route.');
         this.router.navigate(['/']);
       }
     });
 
-    this.apiService.currentPlayer$.pipe(takeUntil(this.destroy$)).subscribe(player => {
-      this.player = player;
+    this.current_player$.pipe(takeUntil(this.destroy$)).subscribe(player => {
+      player ? this.updateUIDisplay(player) : this.resetUIDisplay()
     });
 
     this.updateGameTitle();
@@ -133,28 +134,15 @@ export class Playground implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  loadPlayerData(): void {
-    if (this.playerId === null) return;
-
-    this.apiService.getPlayerById(this.playerId).subscribe({
-      next: (playerData) => {
-        if (!playerData.stats) {
-          playerData.stats = newStats;
-        }
-        this.apiService.setCurrentPlayer(playerData);
-        this.updateUIDisplay();
-      },
-      error: () => {
-        this.router.navigate(['/']);
-      }
-    });
+    this.store.dispatch(CurrentPlayerActions.clearCurrentPlayer()); //Dispatch action to clear current player state when leaving the page
   }
 
   async makeChoice(playerChoice: GameChoice): Promise<void> {
     console.log('Player choice:', playerChoice);
-    if (this.isPlaying || !this.player) {
+    
+    const player = await firstValueFrom(this.current_player$);
+
+    if (this.isPlaying || !player) {
       return;
     }
 
@@ -165,27 +153,30 @@ export class Playground implements OnInit, OnDestroy {
     const computerChoice: GameChoice = this.getComputerChoice();
     const winner = this.getWinner(playerChoice, computerChoice);
 
-    this.player.stats.playerHistory.push(playerChoice);
-    this.player.stats.computerHistory.push(computerChoice);
+    // Create a NEW stats object to maintain immutability
+    let updatedStats = player.stats ? { ...player.stats } : { ...newStats };
 
-    this.computerHistory.push(computerChoice);
-    this.player.stats.totalRounds++;
+    // Update history arrays immutably by creating new arrays
+    updatedStats.playerHistory = [...updatedStats.playerHistory, playerChoice];
+    updatedStats.computerHistory = [...updatedStats.computerHistory, computerChoice];
+    updatedStats.totalRounds++;
+
+    this.updateScore(winner, updatedStats); // Update scores on the new stats object
 
     await this.startCountdown();
     this.displayChoices(playerChoice, computerChoice);
     await this.playAnimation(winner);
 
-    if (this.player.id !== null) {
-      this.apiService.updatePlayerStats(this.player.id, this.player.stats).subscribe({
-        next: (updatedPlayer) => {
-          this.apiService.setCurrentPlayer(updatedPlayer);
-          this.store.dispatch(LeaderboardActions.markLeaderboardStale());
-          this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
-        },
-        error: () => {
-          console.log('Failed to update player stats');
-        }
-      });
+    // Dispatch action to update player stats via NgRx effect
+    if (player.id !== null && updatedStats) { // Use 'player.id' here
+      this.store.dispatch(CurrentPlayerActions.updateCurrentPlayerStats({
+        playerId: player.id,
+        stats: updatedStats
+      }));
+      // The effect will handle calling ApiService and then dispatching success/failure... and also marking leaderboard stale and reloading.
+    } else {
+      console.error('Cannot update player stats: Player ID or stats are missing.');
+      this.isPlaying = false; // Re-enable buttons if update cannot be dispatched
     }
   }
 
@@ -232,7 +223,7 @@ export class Playground implements OnInit, OnDestroy {
       return 'computer';
     }
 
-     // Fallback in case of unexpected logic (should not be reached if rules are exhaustive)
+     // Fallback in case of unexpected logic
     this.resultClass = 'text-yellow-300';
     return 'tie';
   }
@@ -244,29 +235,30 @@ export class Playground implements OnInit, OnDestroy {
 
   private createChoiceDisplayHtml(choice: GameChoice, isPlayer: boolean): string {
     const glowClass = isPlayer ? 'selected-player' : 'selected-computer';
-    // Use the 'emoji' property
+
     return `<div class="choice-card-display ${glowClass}" style="width: 150px;">
               <div class="w-full h-20 flex items-center justify-center text-6xl">${this.choices[choice].emoji}</div>
               <p class="text-center font-semibold text-lg mt-2">${this.choices[choice].name}</p>
             </div>`;
   }
 
-  private updateScore(winner: 'player' | 'computer' | 'tie'): void {
-    if (!this.player) return;
-
+  private updateScore(winner: 'player' | 'computer' | 'tie', stats: PlayerStats): void {
     if (winner === 'player') {
-      this.player.stats.playerScore++;
-      this.player.stats.playerWins++;
+      stats.playerScore++;
+      stats.playerWins++;
     } else if (winner === 'computer') {
-      this.player.stats.computerScore++;
-      this.player.stats.computerWins++;
+      stats.computerScore++;
+      stats.computerWins++;
     }
   }
 
-  private updateUIDisplay(): void {
-    if (!this.player) return;
+  private updateUIDisplay(player: Player): void {
+    if (!player || !player.stats) {
+      this.resetUIDisplay();
+      return;
+    }
 
-    const stats = this.player.stats;
+    const stats = player.stats;
 
     this.playerWinRate = stats.totalRounds > 0 ? Math.round((stats.playerWins / stats.totalRounds) * 100) : 0;
     this.computerWinRate = stats.totalRounds > 0 ? Math.round((stats.computerWins / stats.totalRounds) * 100) : 0;
@@ -276,6 +268,15 @@ export class Playground implements OnInit, OnDestroy {
 
     this.playerHistoryDisplay = this.getHistoryDisplay(stats.playerHistory);
     this.computerHistoryDisplay = this.getHistoryDisplay(stats.computerHistory);
+  }
+
+  private resetUIDisplay(): void {
+    this.playerWinRate = 0;
+    this.computerWinRate = 0;
+    this.playerMostUsed = '-';
+    this.computerMostUsed = '-';
+    this.playerHistoryDisplay = '';
+    this.computerHistoryDisplay = '';
   }
 
   getMostFrequentDisplay(history: GameChoice[]): string {
@@ -348,9 +349,7 @@ export class Playground implements OnInit, OnDestroy {
   }
 
   finalizeRound(winner: 'player' | 'computer' | 'tie'): void {
-    this.updateScore(winner);
-    this.updateUIDisplay();
-    this.isPlaying = false; // Allow new round to start
+    this.isPlaying = false; // allow new round to start
   }
 
   applyMoveAnimations(winningEl: HTMLElement, playerEl: HTMLElement, computerEl: HTMLElement): void {
@@ -361,22 +360,16 @@ export class Playground implements OnInit, OnDestroy {
 
   applyVanishAnimation(losingEl: HTMLElement, gameArenaEl: HTMLElement): void {
     losingEl.classList.add('animate-vanish');
-    gameArenaEl.style.transform = 'scale(1)'; // Reset game arena scale
+    gameArenaEl.style.transform = 'scale(1)';
   }
 
-  resetPlaysStats(): void {
-    if (this.player && this.player.id !== null) {
-      this.apiService.resetPlayerStats(this.player.id).subscribe({
-        next: () => {
-          this.loadPlayerData();
-          this.store.dispatch(LeaderboardActions.markLeaderboardStale());
-          this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
-          console.log('Successfully reset player stats');
-        },
-        error: (error) => {
-          console.error('Failed to reset player stats', error);
-        }
-      });
+  async resetPlaysStats(): Promise<void> {
+    const player = await firstValueFrom(this.current_player$);
+
+    if (player && player.id !== null) {
+      this.store.dispatch(CurrentPlayerActions.resetCurrentPlayerStats({ playerId: player.id }));
+    } else {
+      console.error('Cannot reset player stats: Player ID is missing.');
     }
   }
 

@@ -9,6 +9,8 @@ import { leaderboardReducer } from './store/leaderboard/leaderboard.reducer';
 import { LeaderboardEffects } from './store/leaderboard/leaderboard.effects';
 import { playersReducer } from './store/players/players.reducer';
 import { PlayersEffects } from './store/players/players.effects';
+import { CurrentPlayerEffects } from './store/current-player/current-player.effects';
+import { currentPlayerReducer } from './store/current-player/current-player.reducer';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -17,10 +19,12 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       leaderboard: leaderboardReducer,
       players: playersReducer,
+      currentPlayer: currentPlayerReducer,
     }),
     provideEffects([
       LeaderboardEffects,
       PlayersEffects,
+      CurrentPlayerEffects,
     ]),
   ]
 };

@@ -13,5 +13,5 @@ export const initialLeaderboardState: LeaderboardState = {
   data: [],
   isLoading: false,
   error: null,
-  isStale: true, // initially is stale, so it will be fetched on first load
+  isStale: true, // initially it's stale, so it will be fetched on first load
 };
