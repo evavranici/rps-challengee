@@ -1,7 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { LeaderboardState } from './leaderboard.state';
 
-export const selectLeaderboardState = createFeatureSelector<LeaderboardState>('leaderboard');
+export const selectLeaderboardState =
+  createFeatureSelector<LeaderboardState>('leaderboard');
 
 export const selectLeaderboardData = createSelector(
   selectLeaderboardState,

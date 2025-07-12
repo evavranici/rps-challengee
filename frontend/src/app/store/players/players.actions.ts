@@ -4,9 +4,7 @@ import { Player } from '../../shared/interfaces/player.interface';
 /**
  * Action to initiate loading of players data.
  */
-export const loadPlayers = createAction(
-  '[Players] Load Players'
-);
+export const loadPlayers = createAction('[Players] Load Players');
 
 /**
  * Action dispatched upon successful loading of players data.
@@ -21,12 +19,10 @@ export const loadPlayersSuccess = createAction(
  */
 export const loadPlayersFailure = createAction(
   '[Players] Load Players Failure',
-  props<{ error: any }>()
+  props<{ error: unknown }>()
 );
 
 /**
  * Action to explicitly mark players data as stale.
  */
-export const markPlayersStale = createAction(
-  '[Players] Mark Players Stale'
-);
+export const markPlayersStale = createAction('[Players] Mark Players Stale');

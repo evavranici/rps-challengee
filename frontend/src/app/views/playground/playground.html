@@ -1,56 +1,114 @@
 <div #myHiddenDiv class="hidden-div show" *ngIf="isLeaderboardVisible">
   <app-leaderboard [showBackBtn]="false"></app-leaderboard>
 </div>
-    
-<div #rpsPlayArea id="rps-play-area" class="flex flex-row items-center justify-center min-h-screen bg-gray-900 text-white">
-  <div class="monitoring-display flex flex-col md:flex-row justify-around items-stretch mt-8 gap-4">
+
+<div
+  #rpsPlayArea
+  id="rps-play-area"
+  class="flex flex-row items-center justify-center min-h-screen bg-gray-900 text-white"
+>
+  <div
+    class="monitoring-display flex flex-col md:flex-row justify-around items-stretch mt-8 gap-4"
+  >
     <app-monitoring
       [title]="'THE PLAYER MONITORING'"
       [winRate]="playerWinRate"
       [mostUsed]="playerMostUsed"
       [historyDisplay]="playerHistoryDisplay"
-      [isPlayer]="true">
+      [isPlayer]="true"
+    >
     </app-monitoring>
   </div>
 
-  <div class="flex items-center justify-center min-h-screen text-white my-0 mx-[50px]">
+  <div
+    class="flex items-center justify-center min-h-screen text-white my-0 mx-[50px]"
+  >
     <div class="hud-display p-6 md:p-8">
-
       <header class="text-center mb-6">
-        <h1 id="main-title" class="font-orbitron text-3xl md:text-4xl font-bold tracking-wider text-cyan-300">{{ title }}</h1>
+        <h1
+          id="main-title"
+          class="font-orbitron text-3xl md:text-4xl font-bold tracking-wider text-cyan-300"
+        >
+          {{ title }}
+        </h1>
       </header>
 
-      <div class="flex justify-between items-center mb-6 bg-black bg-opacity-30 p-4 rounded-lg">
+      <div
+        class="flex justify-between items-center mb-6 bg-black bg-opacity-30 p-4 rounded-lg"
+      >
         <div class="text-center">
-          <div id="player-info" class="flex items-center justify-center space-x-2 mb-2">
-            <span id="player-avatar" class="text-2xl">{{ (current_player$ | async)?.icon }}</span>
-            <p id="player-name-display" class="font-orbitron text-xl md:text-2xl text-blue-400">{{ (current_player$ | async)?.name }}</p>
+          <div
+            id="player-info"
+            class="flex items-center justify-center space-x-2 mb-2"
+          >
+            <span id="player-avatar" class="text-2xl">{{
+              (current_player$ | async)?.icon
+            }}</span>
+            <p
+              id="player-name-display"
+              class="font-orbitron text-xl md:text-2xl text-blue-400"
+            >
+              {{ (current_player$ | async)?.name }}
+            </p>
           </div>
-          <p id="player-score" class="text-4xl md:text-5xl font-bold">{{ (current_player$ | async)?.stats?.playerScore }}</p>
+          <p id="player-score" class="text-4xl md:text-5xl font-bold">
+            {{ (current_player$ | async)?.stats?.playerScore }}
+          </p>
         </div>
         <div class="text-center">
           <p class="font-orbitron text-xl md:text-2xl text-red-400">COMPUTER</p>
-          <p id="computer-score" class="text-4xl md:text-5xl font-bold">{{ (current_player$ | async)?.stats?.computerScore }}</p>
+          <p id="computer-score" class="text-4xl md:text-5xl font-bold">
+            {{ (current_player$ | async)?.stats?.computerScore }}
+          </p>
         </div>
       </div>
 
-      <div #gameArena id="game-arena" class="flex justify-around items-center mb-8 min-h-[150px] relative">
-        <div *ngIf="playerChoiceDisplay && playerChoiceDisplay !== null" #playerChoiceDisplayEl id="player-choice-display" class="choice-card bg-gray-800 bg-opacity-70 p-4 rounded-lg border-2 selected">
+      <div
+        #gameArena
+        id="game-arena"
+        class="flex justify-around items-center mb-8 min-h-[150px] relative"
+      >
+        <div
+          *ngIf="playerChoiceDisplay && playerChoiceDisplay !== null"
+          #playerChoiceDisplayEl
+          id="player-choice-display"
+          class="choice-card bg-gray-800 bg-opacity-70 p-4 rounded-lg border-2 selected"
+        >
           <span [innerHTML]="playerChoiceDisplay | safeHtml"></span>
         </div>
 
-        <div *ngIf="!countdownText && !playerChoiceDisplay && !computerChoiceDisplay" class="font-orbitron text-4xl text-gray-400 absolute">VS</div>
-        <div id="arena-center-text-countdown" class="text-center text-yellow-300 text-6xl font-bold mb-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div
+          *ngIf="
+            !countdownText && !playerChoiceDisplay && !computerChoiceDisplay
+          "
+          class="font-orbitron text-4xl text-gray-400 absolute"
+        >
+          VS
+        </div>
+        <div
+          id="arena-center-text-countdown"
+          class="text-center text-yellow-300 text-6xl font-bold mb-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        >
           {{ countdownText }}
         </div>
 
-        <div *ngIf="computerChoiceDisplay && computerChoiceDisplay !== null" #computerChoiceDisplayEl id="player-choice-display" class="choice-card bg-gray-800 bg-opacity-70 p-4 rounded-lg border-2 computer-selected">
+        <div
+          *ngIf="computerChoiceDisplay && computerChoiceDisplay !== null"
+          #computerChoiceDisplayEl
+          id="player-choice-display"
+          class="choice-card bg-gray-800 bg-opacity-70 p-4 rounded-lg border-2 computer-selected"
+        >
           <span [innerHTML]="computerChoiceDisplay | safeHtml"></span>
         </div>
       </div>
 
       <div id="player-controls">
-        <h2 id="controls-title" class="text-center font-orbitron text-2xl mb-6 text-cyan-200">CHOOSE YOUR WEAPON</h2>
+        <h2
+          id="controls-title"
+          class="text-center font-orbitron text-2xl mb-6 text-cyan-200"
+        >
+          CHOOSE YOUR WEAPON
+        </h2>
         <div class="grid gap-4 md:gap-8" [ngClass]="gridColsClass">
           <app-card-choice
             *ngFor="let choice of choiceKeys"
@@ -60,7 +118,8 @@
             [name]="choices[choice].name"
             [rule]="'Beats ' + choices[choice].beats.join(', ')"
             [isDisabled]="isPlaying"
-            (choiceMade)="makeChoice($event)">
+            (choiceMade)="makeChoice($event)"
+          >
           </app-card-choice>
         </div>
       </div>
@@ -86,13 +145,16 @@
     </div>
   </div>
 
-  <div class="monitoring-display flex flex-col md:flex-row justify-around items-stretch mt-8 gap-4">
+  <div
+    class="monitoring-display flex flex-col md:flex-row justify-around items-stretch mt-8 gap-4"
+  >
     <app-monitoring
       [title]="'COMPUTER MONITORING'"
       [winRate]="computerWinRate"
       [mostUsed]="computerMostUsed"
       [historyDisplay]="computerHistoryDisplay"
-      [isPlayer]="false">
+      [isPlayer]="false"
+    >
     </app-monitoring>
   </div>
 </div>

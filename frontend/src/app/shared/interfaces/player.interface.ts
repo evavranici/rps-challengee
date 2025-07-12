@@ -11,7 +11,7 @@ export interface PlayerStats {
   computerScore: number;
   playerWins: number;
   computerWins: number;
-  playerHistory:  GameChoice[];
+  playerHistory: GameChoice[];
   computerHistory: GameChoice[];
   totalRounds: number;
 }
@@ -27,7 +27,7 @@ export const allChoices: Record<GameChoice, ChoiceDefinition> = {
   rock: { name: 'Rock', beats: ['scissors'], emoji: '✊' },
   paper: { name: 'Paper', beats: ['rock'], emoji: '✋' },
   scissors: { name: 'Scissors', beats: ['paper'], emoji: '✌️' },
-  well: { name: 'Well', beats: ['rock', 'scissors'], emoji: '⛲️' }
+  well: { name: 'Well', beats: ['rock', 'scissors'], emoji: '⛲️' },
 };
 
 export const modeChoices: Record<GameMode, GameChoice[]> = {

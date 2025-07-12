@@ -1,9 +1,9 @@
-import { Player } from "../../shared/interfaces/player.interface";
+import { Player } from '../../shared/interfaces/player.interface';
 
 export interface PlayersState {
   data: Player[];
   isLoading: boolean;
-  error: any | null;
+  error: unknown | null;
   isStale: boolean;
 }
 

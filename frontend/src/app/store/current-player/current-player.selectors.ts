@@ -1,7 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { CurrentPlayerState } from './current-player.state';
 
-export const selectCurrentPlayerState = createFeatureSelector<CurrentPlayerState>('currentPlayer');
+export const selectCurrentPlayerState =
+  createFeatureSelector<CurrentPlayerState>('currentPlayer');
 
 export const selectCurrentPlayer = createSelector(
   selectCurrentPlayerState,

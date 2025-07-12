@@ -4,7 +4,7 @@ import { Player } from '../../shared/interfaces/player.interface';
 export interface CurrentPlayerState {
   player: Player | null;
   isLoading: boolean;
-  error: any | null;
+  error: unknown | null;
 }
 
 export const initialCurrentPlayerState: CurrentPlayerState = {

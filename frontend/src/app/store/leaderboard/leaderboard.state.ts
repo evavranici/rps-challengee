@@ -5,7 +5,7 @@ export const leaderboardFeatureKey = 'leaderboard';
 export interface LeaderboardState {
   data: LeaderboardPlayerStats[];
   isLoading: boolean;
-  error: any | null;
+  error: unknown | null;
   isStale: boolean; // if the cached data is considered stale and needs refetching
 }
 

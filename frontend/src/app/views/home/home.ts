@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,20 +16,16 @@ import { RootState } from '../../store/root.state';
   templateUrl: './home.html',
   styleUrls: ['./home.css'],
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CustomizedButton,
-  ]
+  imports: [CommonModule, FormsModule, CustomizedButton],
 })
 export class Home implements OnInit {
+  private router = inject(Router);
+  private store = inject(Store<RootState>);
+
   players$: Observable<Player[]>;
   selectedPlayer: Player | null = null;
 
-  constructor(
-    private router: Router,
-    private store: Store<RootState>,
-  ) {
+  constructor() {
     this.players$ = this.store.select(PlayersSelectors.selectPlayersData);
   }
 

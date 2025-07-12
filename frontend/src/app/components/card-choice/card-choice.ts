@@ -6,7 +6,7 @@ import { GameChoice } from '../../shared/interfaces/player.interface';
   selector: 'app-card-choice',
   imports: [CommonModule],
   templateUrl: './card-choice.html',
-  styleUrl: './card-choice.css'
+  styleUrl: './card-choice.css',
 })
 export class CardChoice {
   @Input() id!: string;
@@ -18,7 +18,7 @@ export class CardChoice {
 
   @Output() choiceMade = new EventEmitter<GameChoice>();
 
-   makeChoice(): void {
+  makeChoice(): void {
     if (!this.isDisabled) {
       this.choiceMade.emit(this.choiceKey);
     }

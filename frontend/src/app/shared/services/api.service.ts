@@ -1,15 +1,16 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Player, PlayerStats } from '../interfaces/player.interface';
 import { Observable } from 'rxjs';
+import { LeaderboardPlayerStats } from '../interfaces/leaderboard.interface';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
+  private http = inject(HttpClient);
   private backendApiPrefix = 'http://localhost:8080/api';
 
-  constructor(private http: HttpClient) { }
   // player related
   getAllPlayers(): Observable<Player[]> {
     return this.http.get<Player[]>(`${this.backendApiPrefix}/players`);
@@ -24,15 +25,23 @@ export class ApiService {
   }
 
   updatePlayerStats(id: number, stats: PlayerStats): Observable<Player> {
-    return this.http.put<Player>(`${this.backendApiPrefix}/players/${id}/stats`, stats);
+    return this.http.put<Player>(
+      `${this.backendApiPrefix}/players/${id}/stats`,
+      stats
+    );
   }
 
-  resetPlayerStats(id: number): Observable<any> {
-    return this.http.put(`${this.backendApiPrefix}/players/${id}/reset-stats`, {});
+  resetPlayerStats(id: number): Observable<Player> {
+    return this.http.put<Player>(
+      `${this.backendApiPrefix}/players/${id}/reset-stats`,
+      {}
+    );
   }
 
   // leaderboard related
-  getLeaderboardPlayerStats(): Observable<any> {
-    return this.http.get(`${this.backendApiPrefix}/players/leaderboard-stats`);
+  getLeaderboardPlayerStats(): Observable<LeaderboardPlayerStats[]> {
+    return this.http.get<LeaderboardPlayerStats[]>(
+      `${this.backendApiPrefix}/players/leaderboard-stats`
+    );
   }
 }

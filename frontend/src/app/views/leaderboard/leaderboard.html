@@ -1,8 +1,16 @@
 <div class="flex items-center justify-center min-h-screen">
   <div class="hud-display p-6 md:p-8 text-center max-w-2xl max-w-4xl w-full">
-    <h1 id="leaderboard-title" class="font-orbitron text-3xl md:text-5xl font-bold text-center text-cyan-300 mb-6">Leaderboard</h1>
+    <h1
+      id="leaderboard-title"
+      class="font-orbitron text-3xl md:text-5xl font-bold text-center text-cyan-300 mb-6"
+    >
+      Leaderboard
+    </h1>
     <div class="overflow-x-auto text-white">
-      <table class="leaderboard-table" *ngIf="(leaderboardData$ | async) as leaderboard; else loadingOrEmpty">
+      <table
+        class="leaderboard-table"
+        *ngIf="leaderboardData$ | async as leaderboard; else loadingOrEmpty"
+      >
         <thead>
           <tr>
             <th>Rank</th>
@@ -23,13 +31,25 @@
             </td>
             <td>{{ player.winPercentage }}%</td>
             <td class="text-center">{{ player.gamesPlayed }}</td>
-            <td>{{ player.score | number:'1.4-4' }}</td> </tr>
+            <td>{{ player.score | number : "1.4-4" }}</td>
+          </tr>
         </tbody>
       </table>
 
       <ng-template #loadingOrEmpty>
-        <p *ngIf="isLoading$ | async" class="text-center text-gray-400 py-6">Retrieving operational data...</p>
-        <p *ngIf="!(isLoading$ | async) && !(leaderboardData$ | async)?.length" class="text-center text-gray-400 py-6">No player monitoring available yet. Create some players and play some games (or update stats via API).</p>
+        <p *ngIf="isLoading$ | async" class="text-center text-gray-400 py-6">
+          Retrieving operational data...
+        </p>
+        <p
+          *ngIf="
+            (isLoading$ | async) === false &&
+            (leaderboardData$ | async)?.length === 0
+          "
+          class="text-center text-gray-400 py-6"
+        >
+          No player monitoring available yet. Create some players and play some
+          games (or update stats via API).
+        </p>
       </ng-template>
     </div>
 

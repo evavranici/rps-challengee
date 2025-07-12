@@ -8,9 +8,8 @@ describe('RpsPlay', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Playground]
-    })
-    .compileComponents();
+      imports: [Playground],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Playground);
     component = fixture.componentInstance;

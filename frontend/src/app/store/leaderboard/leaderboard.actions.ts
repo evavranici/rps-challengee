@@ -12,7 +12,7 @@ export const loadLeaderboardStatsSuccess = createAction(
 
 export const loadLeaderboardStatsFailure = createAction(
   '[Leaderboard] Load Leaderboard Stats Failure',
-  props<{ error: any }>()
+  props<{ error: unknown }>()
 );
 
 export const markLeaderboardStale = createAction(

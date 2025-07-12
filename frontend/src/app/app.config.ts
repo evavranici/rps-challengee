@@ -21,10 +21,6 @@ export const appConfig: ApplicationConfig = {
       players: playersReducer,
       currentPlayer: currentPlayerReducer,
     }),
-    provideEffects([
-      LeaderboardEffects,
-      PlayersEffects,
-      CurrentPlayerEffects,
-    ]),
-  ]
+    provideEffects([LeaderboardEffects, PlayersEffects, CurrentPlayerEffects]),
+  ],
 };

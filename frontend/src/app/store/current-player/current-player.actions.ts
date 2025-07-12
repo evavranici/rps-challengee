@@ -13,7 +13,7 @@ export const loadCurrentPlayerSuccess = createAction(
 
 export const loadCurrentPlayerFailure = createAction(
   '[Current Player] Load Current Player Failure',
-  props<{ error: any }>()
+  props<{ error: unknown }>()
 );
 
 export const updateCurrentPlayerStats = createAction(
@@ -28,7 +28,7 @@ export const updateCurrentPlayerStatsSuccess = createAction(
 
 export const updateCurrentPlayerStatsFailure = createAction(
   '[Current Player] Update Current Player Stats Failure',
-  props<{ error: any }>()
+  props<{ error: unknown }>()
 );
 
 export const resetCurrentPlayerStats = createAction(
@@ -43,7 +43,7 @@ export const resetCurrentPlayerStatsSuccess = createAction(
 
 export const resetCurrentPlayerStatsFailure = createAction(
   '[Current Player] Reset Current Player Stats Failure',
-  props<{ error: any }>()
+  props<{ error: unknown }>()
 );
 
 export const clearCurrentPlayer = createAction(

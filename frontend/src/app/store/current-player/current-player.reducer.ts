@@ -30,17 +30,23 @@ export const currentPlayerReducer = createReducer(
     isLoading: true,
     error: null,
   })),
-  on(CurrentPlayerActions.updateCurrentPlayerStatsSuccess, (state, { player }) => ({
-    ...state,
-    player: player,
-    isLoading: false,
-    error: null,
-  })),
-  on(CurrentPlayerActions.updateCurrentPlayerStatsFailure, (state, { error }) => ({
-    ...state,
-    isLoading: false,
-    error: error,
-  })),
+  on(
+    CurrentPlayerActions.updateCurrentPlayerStatsSuccess,
+    (state, { player }) => ({
+      ...state,
+      player: player,
+      isLoading: false,
+      error: null,
+    })
+  ),
+  on(
+    CurrentPlayerActions.updateCurrentPlayerStatsFailure,
+    (state, { error }) => ({
+      ...state,
+      isLoading: false,
+      error: error,
+    })
+  ),
 
   // resetting current player stats
   on(CurrentPlayerActions.resetCurrentPlayerStats, (state) => ({
@@ -48,17 +54,23 @@ export const currentPlayerReducer = createReducer(
     isLoading: true,
     error: null,
   })),
-  on(CurrentPlayerActions.resetCurrentPlayerStatsSuccess, (state, { player }) => ({
-    ...state,
-    player: player,
-    isLoading: false,
-    error: null,
-  })),
-  on(CurrentPlayerActions.resetCurrentPlayerStatsFailure, (state, { error }) => ({
-    ...state,
-    isLoading: false,
-    error: error,
-  })),
+  on(
+    CurrentPlayerActions.resetCurrentPlayerStatsSuccess,
+    (state, { player }) => ({
+      ...state,
+      player: player,
+      isLoading: false,
+      error: null,
+    })
+  ),
+  on(
+    CurrentPlayerActions.resetCurrentPlayerStatsFailure,
+    (state, { error }) => ({
+      ...state,
+      isLoading: false,
+      error: error,
+    })
+  ),
 
   // clearing current player
   on(CurrentPlayerActions.clearCurrentPlayer, () => ({

@@ -1,6 +1,19 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ElementRef,
+  inject,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GameChoice, newStats, Player, PlayerStats } from '../../shared/interfaces/player.interface';
+import {
+  ChoiceDefinition,
+  GameChoice,
+  newStats,
+  Player,
+  PlayerStats,
+} from '../../shared/interfaces/player.interface';
 import { Observable, Subject, takeUntil, firstValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
@@ -32,16 +45,21 @@ const ANIMATION_DURATION_SHAKE = 500;
     CustomizedButton,
     CardChoice,
   ],
-  templateUrl: './rps-play.html',
-  styleUrls: ['./rps-play.css']
+  templateUrl: './playground.html',
+  styleUrls: ['./playground.css'],
 })
 export class Playground implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private gameConfigService = inject(GameConfigService);
+  private store = inject(Store<RootState>);
+
   @ViewChild('gameArena') gameArenaEl!: ElementRef;
   @ViewChild('playerChoiceDisplayEl') playerChoiceDisplayEl!: ElementRef;
   @ViewChild('computerChoiceDisplayEl') computerChoiceDisplayEl!: ElementRef;
   @ViewChild('myHiddenDiv') myHiddenDivEl!: ElementRef;
   @ViewChild('rpsPlayArea') rpsPlayAreaEl!: ElementRef;
-  
+
   isPlaying: boolean = false;
   countdownText: string = '';
   resultClass: string = '';
@@ -55,50 +73,63 @@ export class Playground implements OnInit, OnDestroy {
   computerHistoryDisplay: string = '';
   isLeaderboardVisible: boolean = false;
   title: string = 'Rock, Paper, Scissors';
-  choices: any;
-  choiceKeys: any;
-  
+  choices: Record<GameChoice, ChoiceDefinition>;
+  choiceKeys: GameChoice[];
+
   leaderboardData$: Observable<LeaderboardPlayerStats[]>;
   leaderboardIsLoading$: Observable<boolean>;
-  leaderboardError$: Observable<any>;
+  leaderboardError$: Observable<unknown>;
 
   current_player$: Observable<Player | null>; // Observable for the current player from the store
   currentPlayerIsLoading$: Observable<boolean>;
-  currentPlayerError$: Observable<any>;
+  currentPlayerError$: Observable<unknown>;
 
   destroy$ = new Subject<void>();
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private gameConfigService: GameConfigService,
-    private store: Store<RootState>
-  ) {
-    this.leaderboardData$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardData));
-    this.leaderboardIsLoading$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardIsLoading));
-    this.leaderboardError$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardError));
-
-    this.current_player$ = this.store.pipe(select(CurrentPlayerSelectors.selectCurrentPlayer));
-    this.currentPlayerIsLoading$ = this.store.pipe(select(CurrentPlayerSelectors.selectCurrentPlayerIsLoading));
-    this.currentPlayerError$ = this.store.pipe(select(CurrentPlayerSelectors.selectCurrentPlayerError));
-  }
-
-  ngOnInit(): void {
+  constructor() {
     this.choices = this.gameConfigService.choices;
     this.choiceKeys = this.gameConfigService.choiceKeys;
 
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      let id = params.get('id');
+    this.leaderboardData$ = this.store.pipe(
+      select(LeaderboardSelectors.selectLeaderboardData)
+    );
+    this.leaderboardIsLoading$ = this.store.pipe(
+      select(LeaderboardSelectors.selectLeaderboardIsLoading)
+    );
+    this.leaderboardError$ = this.store.pipe(
+      select(LeaderboardSelectors.selectLeaderboardError)
+    );
+
+    this.current_player$ = this.store.pipe(
+      select(CurrentPlayerSelectors.selectCurrentPlayer)
+    );
+    this.currentPlayerIsLoading$ = this.store.pipe(
+      select(CurrentPlayerSelectors.selectCurrentPlayerIsLoading)
+    );
+    this.currentPlayerError$ = this.store.pipe(
+      select(CurrentPlayerSelectors.selectCurrentPlayerError)
+    );
+  }
+
+  ngOnInit(): void {
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const id = params.get('id');
       if (id) {
-        this.store.dispatch(CurrentPlayerActions.loadCurrentPlayer({ playerId: +id }));
+        this.store.dispatch(
+          CurrentPlayerActions.loadCurrentPlayer({ playerId: +id })
+        );
       } else {
         console.error('No player id provided in route.');
         this.router.navigate(['/']);
       }
     });
 
-    this.current_player$.pipe(takeUntil(this.destroy$)).subscribe(player => {
-      player ? this.updateUIDisplay(player) : this.resetUIDisplay()
+    this.current_player$.pipe(takeUntil(this.destroy$)).subscribe((player) => {
+      if (player) {
+        this.updateUIDisplay(player);
+      } else {
+        this.resetUIDisplay();
+      }
     });
 
     this.updateGameTitle();
@@ -107,18 +138,22 @@ export class Playground implements OnInit, OnDestroy {
 
   listenForKeyPresses(): void {
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Tab') {  
+      if (event.key === 'Tab') {
         event.preventDefault(); // Prevent default tab behavior to go to the next focusable element
-        this.isLeaderboardVisible ? this.hideLeaderboard() : this.showLeaderboard();
+        if (this.isLeaderboardVisible) {
+          this.hideLeaderboard();
+        } else {
+          this.showLeaderboard();
+        }
       }
     });
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {  
-        this.hideLeaderboard()
+      if (event.key === 'Escape') {
+        this.hideLeaderboard();
       }
     });
-  } 
+  }
 
   showLeaderboard(): void {
     this.isLeaderboardVisible = true;
@@ -138,7 +173,7 @@ export class Playground implements OnInit, OnDestroy {
 
   async makeChoice(playerChoice: GameChoice): Promise<void> {
     console.log('Player choice:', playerChoice);
-    
+
     const player = await firstValueFrom(this.current_player$);
 
     if (this.isPlaying || !player) {
@@ -153,11 +188,14 @@ export class Playground implements OnInit, OnDestroy {
     const winner = this.getWinner(playerChoice, computerChoice);
 
     // Create a NEW stats object to maintain immutability
-    let updatedStats = player.stats ? { ...player.stats } : { ...newStats };
+    const updatedStats = player.stats ? { ...player.stats } : { ...newStats };
 
     // Update history arrays immutably by creating new arrays
     updatedStats.playerHistory = [...updatedStats.playerHistory, playerChoice];
-    updatedStats.computerHistory = [...updatedStats.computerHistory, computerChoice];
+    updatedStats.computerHistory = [
+      ...updatedStats.computerHistory,
+      computerChoice,
+    ];
     updatedStats.totalRounds++;
 
     this.updateScore(winner, updatedStats); // Update scores on the new stats object
@@ -167,14 +205,19 @@ export class Playground implements OnInit, OnDestroy {
     await this.playAnimation(winner);
 
     // Dispatch action to update player stats via NgRx effect
-    if (player.id !== null && updatedStats) { // Use 'player.id' here
-      this.store.dispatch(CurrentPlayerActions.updateCurrentPlayerStats({
-        playerId: player.id,
-        stats: updatedStats
-      }));
+    if (player.id !== null && updatedStats) {
+      // Use 'player.id' here
+      this.store.dispatch(
+        CurrentPlayerActions.updateCurrentPlayerStats({
+          playerId: player.id,
+          stats: updatedStats,
+        })
+      );
       // The effect will handle calling ApiService and then dispatching success/failure... and also marking leaderboard stale and reloading.
     } else {
-      console.error('Cannot update player stats: Player ID or stats are missing.');
+      console.error(
+        'Cannot update player stats: Player ID or stats are missing.'
+      );
       this.isPlaying = false; // Re-enable buttons if update cannot be dispatched
     }
   }
@@ -183,7 +226,7 @@ export class Playground implements OnInit, OnDestroy {
     let count = 3;
     this.countdownText = count.toString();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const intervalId = setInterval(() => {
         count--;
         if (count > 0) {
@@ -204,35 +247,47 @@ export class Playground implements OnInit, OnDestroy {
     return this.choiceKeys[Math.floor(Math.random() * this.choiceKeys.length)];
   }
 
-  private getWinner(playerChoice: GameChoice, computerChoice: GameChoice): 'player' | 'computer' | 'tie' {
+  private getWinner(
+    playerChoice: GameChoice,
+    computerChoice: GameChoice
+  ): 'player' | 'computer' | 'tie' {
     if (playerChoice === computerChoice) {
       this.resultClass = 'text-yellow-300';
       return 'tie';
     }
 
-   // if player wins
+    // if player wins
     if (this.choices[playerChoice].beats.includes(computerChoice)) {
       this.resultClass = 'text-green-400';
       return 'player';
     }
-    
+
     // if computer wins
     if (this.choices[computerChoice].beats.includes(playerChoice)) {
       this.resultClass = 'text-red-400';
       return 'computer';
     }
 
-     // Fallback in case of unexpected logic
+    // Fallback in case of unexpected logic
     this.resultClass = 'text-yellow-300';
     return 'tie';
   }
 
-  private displayChoices(playerChoice: GameChoice, computerChoice: GameChoice): void {
+  private displayChoices(
+    playerChoice: GameChoice,
+    computerChoice: GameChoice
+  ): void {
     this.playerChoiceDisplay = this.createChoiceDisplayHtml(playerChoice, true);
-    this.computerChoiceDisplay = this.createChoiceDisplayHtml(computerChoice, false);
+    this.computerChoiceDisplay = this.createChoiceDisplayHtml(
+      computerChoice,
+      false
+    );
   }
 
-  private createChoiceDisplayHtml(choice: GameChoice, isPlayer: boolean): string {
+  private createChoiceDisplayHtml(
+    choice: GameChoice,
+    isPlayer: boolean
+  ): string {
     const glowClass = isPlayer ? 'selected-player' : 'selected-computer';
 
     return `<div class="choice-card-display ${glowClass}" style="width: 150px;">
@@ -241,7 +296,10 @@ export class Playground implements OnInit, OnDestroy {
             </div>`;
   }
 
-  private updateScore(winner: 'player' | 'computer' | 'tie', stats: PlayerStats): void {
+  private updateScore(
+    winner: 'player' | 'computer' | 'tie',
+    stats: PlayerStats
+  ): void {
     if (winner === 'player') {
       stats.playerScore++;
       stats.playerWins++;
@@ -259,8 +317,14 @@ export class Playground implements OnInit, OnDestroy {
 
     const stats = player.stats;
 
-    this.playerWinRate = stats.totalRounds > 0 ? Math.round((stats.playerWins / stats.totalRounds) * 100) : 0;
-    this.computerWinRate = stats.totalRounds > 0 ? Math.round((stats.computerWins / stats.totalRounds) * 100) : 0;
+    this.playerWinRate =
+      stats.totalRounds > 0
+        ? Math.round((stats.playerWins / stats.totalRounds) * 100)
+        : 0;
+    this.computerWinRate =
+      stats.totalRounds > 0
+        ? Math.round((stats.computerWins / stats.totalRounds) * 100)
+        : 0;
 
     this.playerMostUsed = this.getMostFrequentDisplay(stats.playerHistory);
     this.computerMostUsed = this.getMostFrequentDisplay(stats.computerHistory);
@@ -280,23 +344,40 @@ export class Playground implements OnInit, OnDestroy {
 
   getMostFrequentDisplay(history: GameChoice[]): string {
     if (!history || history.length === 0) return '-';
-    const counts = history.reduce((acc, choice) => { acc[choice] = (acc[choice] || 0) + 1; return acc; }, {} as Record<string, number>);
-    const mostFrequent = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+    const counts = history.reduce((acc, choice) => {
+      acc[choice] = (acc[choice] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    const mostFrequent = Object.keys(counts).reduce((a, b) =>
+      counts[a] > counts[b] ? a : b
+    );
 
-    return `<div class="flex items-center justify-center"><span style="font-size: 2.5em;">${this.choices[mostFrequent as GameChoice].emoji}</span> <span class="ml-2">${this.choices[mostFrequent as GameChoice].name}</span></div>`;
+    return `<div class="flex items-center justify-center"><span style="font-size: 2.5em;">${
+      this.choices[mostFrequent as GameChoice].emoji
+    }</span> <span class="ml-2">${
+      this.choices[mostFrequent as GameChoice].name
+    }</span></div>`;
   }
 
   getHistoryDisplay(history: GameChoice[]): string {
     if (!history) return '';
 
-    return history.slice(-5).map(choice => `<span style="font-size: 2em; margin: 0 5px;">${this.choices[choice].emoji}</span>`).join('');
+    return history
+      .slice(-5)
+      .map(
+        (choice) =>
+          `<span style="font-size: 2em; margin: 0 5px;">${this.choices[choice].emoji}</span>`
+      )
+      .join('');
   }
 
   getChoiceEmoji(choiceKey: GameChoice): string {
     return this.choices[choiceKey].emoji;
   }
 
-  private async playAnimation(winner: 'player' | 'computer' | 'tie'): Promise<void> {
+  private async playAnimation(
+    winner: 'player' | 'computer' | 'tie'
+  ): Promise<void> {
     await this.delay(ANIMATION_DELAY_INITIAL);
 
     const playerEl = this.playerChoiceDisplayEl.nativeElement;
@@ -307,17 +388,16 @@ export class Playground implements OnInit, OnDestroy {
 
     if (winner === 'tie') {
       await this.handleTieAnimation(gameArenaEl);
-      this.finalizeRound(winner);
+      this.finalizeRound();
       return;
     }
 
-    const [winningEl, losingEl] = winner === 'player'
-      ? [playerEl, computerEl]
-      : [computerEl, playerEl];
+    const [winningEl, losingEl] =
+      winner === 'player' ? [playerEl, computerEl] : [computerEl, playerEl];
 
     await this.delay(ANIMATION_DELAY_INITIAL);
 
-    gameArenaEl.style.transform = 'scale(1.05)'
+    gameArenaEl.style.transform = 'scale(1.05)';
 
     await this.delay(ANIMATION_DELAY_SHOW_MOVES);
     this.applyMoveAnimations(winningEl, playerEl, computerEl);
@@ -325,18 +405,30 @@ export class Playground implements OnInit, OnDestroy {
     await this.delay(ANIMATION_DELAY_VANISH - ANIMATION_DELAY_SHOW_MOVES);
     this.applyVanishAnimation(losingEl, gameArenaEl);
 
-    this.finalizeRound(winner);
+    this.finalizeRound();
   }
 
   delay(ms: number): Promise<void> {
-      return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  clearAnimationStates(playerEl: HTMLElement, computerEl: HTMLElement, gameArenaEl: HTMLElement): void {
+  clearAnimationStates(
+    playerEl: HTMLElement,
+    computerEl: HTMLElement,
+    gameArenaEl: HTMLElement
+  ): void {
     gameArenaEl.classList.remove('shake-animation');
     gameArenaEl.style.transform = 'scale(1)';
-    playerEl.classList.remove('show-in-front', 'player-moves', 'animate-vanish');
-    computerEl.classList.remove('show-in-front', 'computer-moves', 'animate-vanish');
+    playerEl.classList.remove(
+      'show-in-front',
+      'player-moves',
+      'animate-vanish'
+    );
+    computerEl.classList.remove(
+      'show-in-front',
+      'computer-moves',
+      'animate-vanish'
+    );
   }
 
   async handleTieAnimation(gameArenaEl: HTMLElement): Promise<void> {
@@ -347,11 +439,15 @@ export class Playground implements OnInit, OnDestroy {
     gameArenaEl.classList.remove('shake-animation');
   }
 
-  finalizeRound(winner: 'player' | 'computer' | 'tie'): void {
+  finalizeRound(): void {
     this.isPlaying = false; // allow new round to start
   }
 
-  applyMoveAnimations(winningEl: HTMLElement, playerEl: HTMLElement, computerEl: HTMLElement): void {
+  applyMoveAnimations(
+    winningEl: HTMLElement,
+    playerEl: HTMLElement,
+    computerEl: HTMLElement
+  ): void {
     winningEl.classList.add('show-in-front');
     playerEl.classList.add('player-moves');
     computerEl.classList.add('computer-moves');
@@ -366,7 +462,9 @@ export class Playground implements OnInit, OnDestroy {
     const player = await firstValueFrom(this.current_player$);
 
     if (player && player.id !== null) {
-      this.store.dispatch(CurrentPlayerActions.resetCurrentPlayerStats({ playerId: player.id }));
+      this.store.dispatch(
+        CurrentPlayerActions.resetCurrentPlayerStats({ playerId: player.id })
+      );
     } else {
       console.error('Cannot reset player stats: Player ID is missing.');
     }
@@ -387,7 +485,9 @@ export class Playground implements OnInit, OnDestroy {
     }
   }
 
-   private updateGameTitle(): void {
-    this.title = this.choiceKeys.map((key: any) => this.choices[key].name).join(', ');
+  private updateGameTitle(): void {
+    this.title = this.choiceKeys
+      .map((key: GameChoice) => this.choices[key].name)
+      .join(', ');
   }
 }

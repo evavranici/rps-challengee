@@ -4,11 +4,9 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-customized-button',
   standalone: true,
-  imports: [
-    CommonModule,
-  ],
+  imports: [CommonModule],
   templateUrl: './customized-button.html',
-  styleUrl: './customized-button.css'
+  styleUrl: './customized-button.css',
 })
 export class CustomizedButton {
   @Input() text: string = '';
@@ -17,7 +15,8 @@ export class CustomizedButton {
 
   @Output() buttonClick = new EventEmitter<void>();
 
-  baseClasses: string = 'btn-action w-full md:w-2/3 mx-auto font-bold py-3 px-6 rounded-lg text-white transition duration-300';
+  baseClasses: string =
+    'btn-action w-full md:w-2/3 mx-auto font-bold py-3 px-6 rounded-lg text-white transition duration-300';
   disabledClasses: string = 'disabled:opacity-50 disabled:cursor-not-allowed';
 
   onClick(): void {

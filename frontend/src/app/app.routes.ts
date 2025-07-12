@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { Home} from './views/home/home';
+import { Home } from './views/home/home';
 import { AddPlayer } from './views/add-player/add-player';
 import { Leaderboard } from './views/leaderboard/leaderboard';
 import { Playground } from './views/playground/playground';
@@ -10,11 +10,11 @@ export const routes: Routes = [
   { path: 'add-player', component: AddPlayer },
   { path: 'leaderboard', component: Leaderboard },
   { path: 'rps-play/:id', component: Playground },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
