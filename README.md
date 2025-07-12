@@ -122,8 +122,8 @@ Check one specific metrics:
 ```bash
 H2 Console Settings:
 
-JDBC URL: jdbc:h2:mem:testdb
-User: sa
+JDBC URL: jdbc:h2:mem:rps_db
+User: rps
 Password: myverystrongpassword
 ```
 
