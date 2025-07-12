@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { Home} from './views/home/home';
 import { AddPlayer } from './views/add-player/add-player';
 import { Leaderboard } from './views/leaderboard/leaderboard';
-import { Playground } from './views/rps-play/rps-play';
+import { Playground } from './views/playground/playground';
 
 export const routes: Routes = [
   { path: '', component: Home },

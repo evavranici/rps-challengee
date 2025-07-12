@@ -16,7 +16,6 @@ import * as LeaderboardSelectors from '../../store/leaderboard/leaderboard.selec
 import * as CurrentPlayerActions from '../../store/current-player/current-player.actions';
 import * as CurrentPlayerSelectors from '../../store/current-player/current-player.selectors';
 
-
 const ANIMATION_DELAY_INITIAL = 50;
 const ANIMATION_DELAY_SHOW_MOVES = 500;
 const ANIMATION_DELAY_VANISH = 2000;

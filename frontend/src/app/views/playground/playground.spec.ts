@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Playground } from './rps-play';
+import { Playground } from './playground';
 
 describe('RpsPlay', () => {
   let component: Playground;
