@@ -5,6 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { Player } from '../../shared/interfaces/player.interface';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
 import { PlayerService } from '../../shared/services/player.service';
+import { Store } from '@ngrx/store';
+import { LeaderboardState } from '../../store/leaderboard/leaderboard.state';
+import * as LeaderboardActions from '../../store/leaderboard/leaderboard.actions';
 
 @Component({
   selector: 'app-home',
@@ -24,10 +27,12 @@ export class Home implements OnInit {
   constructor(
     private router: Router,
     public playerService: PlayerService,
+    private store: Store<LeaderboardState>,
   ) { }
 
   ngOnInit(): void {
     this.playerService.fetchPlayers();
+    this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
   }
 
   selectPlayer(player: Player): void {

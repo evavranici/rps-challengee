@@ -2,8 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-import { LeaderboardService } from '../../shared/services/leaderboard.service';
 import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
+import { Observable } from 'rxjs';
+import { select, Store } from '@ngrx/store';
+import * as LeaderboardSelectors from '../../store/leaderboard/leaderboard.selectors';
+import { LeaderboardState } from '../../store/leaderboard/leaderboard.state';
 
 @Component({
   selector: 'app-leaderboard',
@@ -18,17 +21,22 @@ import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.inte
 })
 export class Leaderboard implements OnInit {
   @Input() showBackBtn: boolean = true;
-  leaderboardStats: LeaderboardPlayerStats[] = [];
+
+  leaderboardData$: Observable<LeaderboardPlayerStats[]>;
+  isLoading$: Observable<boolean>;
+  error$: Observable<any>;
 
   constructor(
-     private router: Router,
-     public leaderboardService: LeaderboardService,
-  ) { }
+    private router: Router,
+    private store: Store<LeaderboardState>,
+  ) {
+    this.leaderboardData$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardData));
+    this.isLoading$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardIsLoading));
+    this.error$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardError));
+  }
 
   ngOnInit(): void {
-    console.log(this.showBackBtn)
-    this.leaderboardService.fetchLeaderboardData();
-    console.log('Leaderboard component initialized. Displaying data from service.');
+    console.log('Leaderboard component initialized.');
   }
 
   backToMenu(): void {

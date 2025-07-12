@@ -2,15 +2,19 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/co
 import { ActivatedRoute, Router } from '@angular/router';
 import { GameChoice, Player } from '../../shared/interfaces/player.interface';
 import { ApiService } from '../../shared/services/api.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 import { Monitoring } from '../../components/monitoring/monitoring';
 import { Leaderboard } from '../leaderboard/leaderboard';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-import { LeaderboardService } from '../../shared/services/leaderboard.service';
 import { CardChoice } from '../../components/card-choice/card-choice';
 import { GameConfigService } from '../../shared/services/game-config.service';
+import { select, Store } from '@ngrx/store';
+import { LeaderboardState } from '../../store/leaderboard/leaderboard.state';
+import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
+import * as LeaderboardSelectors from '../../store/leaderboard/leaderboard.selectors';
+import * as LeaderboardActions from '../../store/leaderboard/leaderboard.actions';
 
 const ANIMATION_DELAY_INITIAL = 50;
 const ANIMATION_DELAY_SHOW_MOVES = 500;
@@ -18,13 +22,20 @@ const ANIMATION_DELAY_VANISH = 2000;
 const ANIMATION_DURATION_SHAKE = 500;
 
 @Component({
-  selector: 'app-rps-play',
+  selector: 'app-playground',
   standalone: true,
-  imports: [CommonModule, SafeHtmlPipe, Monitoring, Leaderboard, CustomizedButton, CardChoice],
+  imports: [
+    CommonModule,
+    SafeHtmlPipe,
+    Monitoring,
+    Leaderboard,
+    CustomizedButton,
+    CardChoice
+  ],
   templateUrl: './rps-play.html',
   styleUrls: ['./rps-play.css']
 })
-export class RpsPlay implements OnInit, OnDestroy {
+export class Playground implements OnInit, OnDestroy {
   playerId: number | null = null;
   player: Player | null = null;
   isPlaying: boolean = false;
@@ -42,6 +53,9 @@ export class RpsPlay implements OnInit, OnDestroy {
   computerHistoryDisplay: string = '';
 
   isLeaderboardVisible: boolean = false;
+  title: string = 'Rock, Paper, Scissors';
+  choices: any;
+  choiceKeys: any;
 
   @ViewChild('gameArena') gameArenaEl!: ElementRef;
   @ViewChild('playerChoiceDisplayEl') playerChoiceDisplayEl!: ElementRef;
@@ -50,18 +64,23 @@ export class RpsPlay implements OnInit, OnDestroy {
   @ViewChild('rpsPlayArea') rpsPlayAreaEl!: ElementRef;
   
   destroy$ = new Subject<void>();
-  title: string = 'Rock, Paper, Scissors';
+  
 
-  choices: any;
-  choiceKeys: any;
+  leaderboardData$: Observable<LeaderboardPlayerStats[]>;
+  leaderboardIsLoading$: Observable<boolean>;
+  leaderboardError$: Observable<any>;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
-    public leaderboardService: LeaderboardService,
     private gameConfigService: GameConfigService,
-  ) { }
+    private store: Store<LeaderboardState>,
+  ) {
+    this.leaderboardData$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardData));
+    this.leaderboardIsLoading$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardIsLoading));
+    this.leaderboardError$ = this.store.pipe(select(LeaderboardSelectors.selectLeaderboardError));
+  }
 
   ngOnInit(): void {
     this.choices = this.gameConfigService.choices;
@@ -160,8 +179,11 @@ export class RpsPlay implements OnInit, OnDestroy {
       this.apiService.updatePlayerStats(this.player.id, this.player.stats).subscribe({
         next: (updatedPlayer) => {
           this.apiService.setCurrentPlayer(updatedPlayer);
+          this.store.dispatch(LeaderboardActions.markLeaderboardStale());
+          this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
         },
         error: () => {
+          console.log('Failed to update player stats');
         }
       });
     }
@@ -260,13 +282,13 @@ export class RpsPlay implements OnInit, OnDestroy {
     if (!history || history.length === 0) return '-';
     const counts = history.reduce((acc, choice) => { acc[choice] = (acc[choice] || 0) + 1; return acc; }, {} as Record<string, number>);
     const mostFrequent = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-    // Use the 'emoji' property
+
     return `<div class="flex items-center justify-center"><span style="font-size: 2.5em;">${this.choices[mostFrequent as GameChoice].emoji}</span> <span class="ml-2">${this.choices[mostFrequent as GameChoice].name}</span></div>`;
   }
 
   getHistoryDisplay(history: GameChoice[]): string {
     if (!history) return '';
-    // Use the 'emoji' property and apply inline style for size
+
     return history.slice(-5).map(choice => `<span style="font-size: 2em; margin: 0 5px;">${this.choices[choice].emoji}</span>`).join('');
   }
 
@@ -329,7 +351,6 @@ export class RpsPlay implements OnInit, OnDestroy {
     this.updateScore(winner);
     this.updateUIDisplay();
     this.isPlaying = false; // Allow new round to start
-    this.leaderboardService.markLeaderboardStale();
   }
 
   applyMoveAnimations(winningEl: HTMLElement, playerEl: HTMLElement, computerEl: HTMLElement): void {
@@ -348,8 +369,9 @@ export class RpsPlay implements OnInit, OnDestroy {
       this.apiService.resetPlayerStats(this.player.id).subscribe({
         next: () => {
           this.loadPlayerData();
-          this.leaderboardService.markLeaderboardStale()
-          console.log('Successfuly reset player stats',);
+          this.store.dispatch(LeaderboardActions.markLeaderboardStale());
+          this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
+          console.log('Successfully reset player stats');
         },
         error: (error) => {
           console.error('Failed to reset player stats', error);

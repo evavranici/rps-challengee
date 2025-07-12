@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RpsPlay } from './rps-play';
+import { Playground } from './rps-play';
 
 describe('RpsPlay', () => {
-  let component: RpsPlay;
-  let fixture: ComponentFixture<RpsPlay>;
+  let component: Playground;
+  let fixture: ComponentFixture<Playground>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RpsPlay]
+      imports: [Playground]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(RpsPlay);
+    fixture = TestBed.createComponent(Playground);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

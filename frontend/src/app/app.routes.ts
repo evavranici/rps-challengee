@@ -3,13 +3,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { Home} from './views/home/home';
 import { AddPlayer } from './views/add-player/add-player';
 import { Leaderboard } from './views/leaderboard/leaderboard';
-import { RpsPlay } from './views/rps-play/rps-play';
+import { Playground } from './views/rps-play/rps-play';
 
 export const routes: Routes = [
   { path: '', component: Home },
   { path: 'add-player', component: AddPlayer },
   { path: 'leaderboard', component: Leaderboard },
-  { path: 'rps-play/:id', component: RpsPlay },
+  { path: 'rps-play/:id', component: Playground },
   { path: '**', redirectTo: '' }
 ];
 

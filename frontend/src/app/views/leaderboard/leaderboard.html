@@ -2,7 +2,7 @@
   <div class="hud-display p-6 md:p-8 text-center max-w-2xl max-w-4xl w-full">
     <h1 id="leaderboard-title" class="font-orbitron text-3xl md:text-5xl font-bold text-center text-cyan-300 mb-6">Leaderboard</h1>
     <div class="overflow-x-auto text-white">
-      <table class="leaderboard-table">
+      <table class="leaderboard-table" *ngIf="(leaderboardData$ | async) as leaderboard; else loadingOrEmpty">
         <thead>
           <tr>
             <th>Rank</th>
@@ -13,10 +13,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngIf="leaderboardService.leaderboardStats().length === 0">
-            <td colspan="5" class="text-center text-gray-400 py-4">No player monitoring available yet. Create some players and play some games (or update stats via API)!</td>
-          </tr>
-          <tr *ngFor="let player of leaderboardService.leaderboardStats()">
+          <tr *ngFor="let player of leaderboard">
             <td class="rank">{{ player.rank }}</td>
             <td>
               <div class="flex items-center">
@@ -29,6 +26,11 @@
             <td>{{ player.score | number:'1.4-4' }}</td> </tr>
         </tbody>
       </table>
+
+      <ng-template #loadingOrEmpty>
+        <p *ngIf="isLoading$ | async" class="text-center text-gray-400 py-6">Retrieving operational data...</p>
+        <p *ngIf="!(isLoading$ | async) && !(leaderboardData$ | async)?.length" class="text-center text-gray-400 py-6">No player monitoring available yet. Create some players and play some games (or update stats via API).</p>
+      </ng-template>
     </div>
 
     <app-customized-button
