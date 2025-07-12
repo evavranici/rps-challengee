@@ -4,7 +4,9 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-customized-button',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+  ],
   templateUrl: './customized-button.html',
   styleUrl: './customized-button.css'
 })

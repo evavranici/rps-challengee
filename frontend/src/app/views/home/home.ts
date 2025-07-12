@@ -4,10 +4,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Player } from '../../shared/interfaces/player.interface';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-import { PlayerService } from '../../shared/services/player.service';
 import { Store } from '@ngrx/store';
 import { LeaderboardState } from '../../store/leaderboard/leaderboard.state';
 import * as LeaderboardActions from '../../store/leaderboard/leaderboard.actions';
+import * as PlayersActions from '../../store/players/players.actions';
+import * as PlayersSelectors from '../../store/players/players.selectors';
+import { PlayersState } from '../../store/players/players.state';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -21,17 +24,18 @@ import * as LeaderboardActions from '../../store/leaderboard/leaderboard.actions
   ]
 })
 export class Home implements OnInit {
-  players: Player[] = [];
+  players$: Observable<Player[]>;
   selectedPlayer: Player | null = null;
 
   constructor(
     private router: Router,
-    public playerService: PlayerService,
-    private store: Store<LeaderboardState>,
-  ) { }
+    private store: Store<{ leaderboard: LeaderboardState; players: PlayersState }>,
+  ) {
+    this.players$ = this.store.select(PlayersSelectors.selectPlayersData);
+  }
 
   ngOnInit(): void {
-    this.playerService.fetchPlayers();
+    this.store.dispatch(PlayersActions.loadPlayers());
     this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
   }
 

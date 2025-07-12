@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GameChoice, Player } from '../../shared/interfaces/player.interface';
+import { GameChoice, newStats, Player } from '../../shared/interfaces/player.interface';
 import { ApiService } from '../../shared/services/api.service';
 import { Observable, Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -141,7 +141,7 @@ export class Playground implements OnInit, OnDestroy {
     this.apiService.getPlayerById(this.playerId).subscribe({
       next: (playerData) => {
         if (!playerData.stats) {
-          playerData.stats = { playerScore: 0, computerScore: 0, playerWins: 0, computerWins: 0, totalRounds: 0, playerHistory: [], computerHistory: [] };
+          playerData.stats = newStats;
         }
         this.apiService.setCurrentPlayer(playerData);
         this.updateUIDisplay();

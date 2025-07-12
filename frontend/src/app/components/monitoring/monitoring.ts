@@ -5,7 +5,10 @@ import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 @Component({
   selector: 'app-monitoring',
   standalone: true,
-  imports: [CommonModule, SafeHtmlPipe],
+  imports: [
+    CommonModule,
+    SafeHtmlPipe,
+  ],
   templateUrl: './monitoring.html',
   styleUrls: ['./monitoring.css']
 })

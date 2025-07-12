@@ -1,4 +1,3 @@
-// src/app/store/leaderboard/leaderboard.state.ts
 import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
 
 export const leaderboardFeatureKey = 'leaderboard';

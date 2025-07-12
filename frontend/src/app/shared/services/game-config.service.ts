@@ -5,7 +5,7 @@ import { allChoices, ChoiceDefinition, GameChoice, GameMode, modeChoices } from 
   providedIn: 'root'
 })
 export class GameConfigService {
-  private mode: GameMode = GameMode.Classic; // you can set the mode here
+  private mode: GameMode = GameMode.Classic; // you can change the mode here
 
   constructor() { }
 

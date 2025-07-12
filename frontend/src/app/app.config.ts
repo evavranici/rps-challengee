@@ -7,16 +7,20 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { leaderboardReducer } from './store/leaderboard/leaderboard.reducer';
 import { LeaderboardEffects } from './store/leaderboard/leaderboard.effects';
+import { playersReducer } from './store/players/players.reducer';
+import { PlayersEffects } from './store/players/players.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(),
     provideStore({
-      leaderboard: leaderboardReducer
+      leaderboard: leaderboardReducer,
+      players: playersReducer,
     }),
     provideEffects([
-      LeaderboardEffects
+      LeaderboardEffects,
+      PlayersEffects,
     ]),
   ]
 };

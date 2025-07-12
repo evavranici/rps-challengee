@@ -35,6 +35,16 @@ export const modeChoices: Record<GameMode, GameChoice[]> = {
   extended: ['rock', 'paper', 'scissors', 'well'],
 };
 
+export const newStats: PlayerStats = {
+  playerScore: 0,
+  computerScore: 0,
+  playerWins: 0,
+  computerWins: 0,
+  playerHistory: [],
+  computerHistory: [],
+  totalRounds: 0,
+};
+
 // enums
 export enum GameMode {
   Classic = 'classic',

@@ -19,8 +19,7 @@ export class LeaderboardEffects {
   ) {
     console.log('[LeaderboardEffects] Constructor initialized.');
 
-    this.loadLeaderboardStats$ = createEffect(() =>
-    this.actions$.pipe(
+    this.loadLeaderboardStats$ = createEffect(() => this.actions$.pipe(
       tap(action => console.log('[LeaderboardEffects] Action received:', action.type)),
       ofType(LeaderboardActions.loadLeaderboardStats),
       withLatestFrom(this.store.select(LeaderboardSelectors.selectLeaderboardIsStale)),
@@ -33,8 +32,7 @@ export class LeaderboardEffects {
           catchError(error => of(LeaderboardActions.loadLeaderboardStatsFailure({ error })))
         )
       })
-    )
-  );
+    ));
   }
 }
 
