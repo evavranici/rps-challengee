@@ -1,0 +1,11 @@
+<button
+    class="choice-card bg-gray-800 bg-opacity-50 p-4 rounded-lg border-2 border-transparent hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 w-full"
+    [id]="id"
+    [disabled]="isDisabled"
+    (click)="makeChoice()">
+    <div class="w-full h-20 md:h-32 flex items-center justify-center">
+        <span class="text-[80px]">{{ emoji }}</span>
+    </div>
+    <p class="text-center font-semibold text-lg mt-2">{{ name }}</p>
+    <p class="text-center text-sm text-gray-400" [ngClass]="{'text-xs': name === 'Well'}">{{ rule }}</p>
+</button>

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-import { LeaderboardService } from '../../shared/services/leaderboard-service';
+import { LeaderboardService } from '../../shared/services/leaderboard.service';
 import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
 
 @Component({

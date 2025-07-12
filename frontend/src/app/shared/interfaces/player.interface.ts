@@ -1,5 +1,4 @@
-import { GameChoice } from "../../views/rps-play/rps-play"; // Stores 'rock', 'paper', 'scissors' choices
-
+//interfaces
 export interface Player {
   id: number | null;
   name: string;
@@ -16,3 +15,31 @@ export interface PlayerStats {
   computerHistory: GameChoice[];
   totalRounds: number;
 }
+
+export interface ChoiceDefinition {
+  name: string;
+  beats: GameChoice[];
+  emoji: string;
+}
+
+// constants
+export const allChoices: Record<GameChoice, ChoiceDefinition> = {
+  rock: { name: 'Rock', beats: ['scissors'], emoji: '✊' },
+  paper: { name: 'Paper', beats: ['rock'], emoji: '✋' },
+  scissors: { name: 'Scissors', beats: ['paper'], emoji: '✌️' },
+  well: { name: 'Well', beats: ['rock', 'scissors'], emoji: '⛲️' }
+};
+
+export const modeChoices: Record<GameMode, GameChoice[]> = {
+  classic: ['rock', 'paper', 'scissors'],
+  extended: ['rock', 'paper', 'scissors', 'well'],
+};
+
+// enums
+export enum GameMode {
+  Classic = 'classic',
+  Extended = 'extended',
+}
+
+// types
+export type GameChoice = 'rock' | 'paper' | 'scissors' | 'well';

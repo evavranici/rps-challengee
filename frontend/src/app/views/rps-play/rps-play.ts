@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Player } from '../../shared/interfaces/player.interface';
+import { GameChoice, Player } from '../../shared/interfaces/player.interface';
 import { ApiService } from '../../shared/services/api.service';
 import { Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -8,9 +8,9 @@ import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 import { Monitoring } from '../../components/monitoring/monitoring';
 import { Leaderboard } from '../leaderboard/leaderboard';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-import { LeaderboardService } from '../../shared/services/leaderboard-service';
-
-export type GameChoice = 'rock' | 'paper' | 'scissors';
+import { LeaderboardService } from '../../shared/services/leaderboard.service';
+import { CardChoice } from '../../components/card-choice/card-choice';
+import { GameConfigService } from '../../shared/services/game-config.service';
 
 const ANIMATION_DELAY_INITIAL = 50;
 const ANIMATION_DELAY_SHOW_MOVES = 500;
@@ -20,7 +20,7 @@ const ANIMATION_DURATION_SHAKE = 500;
 @Component({
   selector: 'app-rps-play',
   standalone: true,
-  imports: [CommonModule, SafeHtmlPipe, Monitoring, Leaderboard, CustomizedButton],
+  imports: [CommonModule, SafeHtmlPipe, Monitoring, Leaderboard, CustomizedButton, CardChoice],
   templateUrl: './rps-play.html',
   styleUrls: ['./rps-play.css']
 })
@@ -48,24 +48,25 @@ export class RpsPlay implements OnInit, OnDestroy {
   @ViewChild('computerChoiceDisplayEl') computerChoiceDisplayEl!: ElementRef;
   @ViewChild('myHiddenDiv') myHiddenDivEl!: ElementRef;
   @ViewChild('rpsPlayArea') rpsPlayAreaEl!: ElementRef;
-
-  readonly choices: any = {
-    rock: { name: 'Rock', beats: 'scissors', emoji: '✊' },
-    paper: { name: 'Paper', beats: 'rock', emoji: '✋' },
-    scissors: { name: 'Scissors', beats: 'paper', emoji: '✌️' }
-  };
   
-  choiceKeys: GameChoice[] = ['rock', 'paper', 'scissors'];
   destroy$ = new Subject<void>();
+  title: string = 'Rock, Paper, Scissors';
+
+  choices: any;
+  choiceKeys: any;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private apiService: ApiService,
     public leaderboardService: LeaderboardService,
+    private gameConfigService: GameConfigService,
   ) { }
 
   ngOnInit(): void {
+    this.choices = this.gameConfigService.choices;
+    this.choiceKeys = this.gameConfigService.choiceKeys;
+
     this.route.paramMap.subscribe(params => {
       const id = params.get('id');
       if (id) {
@@ -81,6 +82,7 @@ export class RpsPlay implements OnInit, OnDestroy {
       this.player = player;
     });
 
+    this.updateGameTitle();
     this.listenForKeyPresses();
   }
 
@@ -132,6 +134,7 @@ export class RpsPlay implements OnInit, OnDestroy {
   }
 
   async makeChoice(playerChoice: GameChoice): Promise<void> {
+    console.log('Player choice:', playerChoice);
     if (this.isPlaying || !this.player) {
       return;
     }
@@ -195,13 +198,21 @@ export class RpsPlay implements OnInit, OnDestroy {
       return 'tie';
     }
 
-    if (this.choices[playerChoice].beats === computerChoice) {
+   // if player wins
+    if (this.choices[playerChoice].beats.includes(computerChoice)) {
       this.resultClass = 'text-green-400';
       return 'player';
-    } else {
+    }
+    
+    // if computer wins
+    if (this.choices[computerChoice].beats.includes(playerChoice)) {
       this.resultClass = 'text-red-400';
       return 'computer';
     }
+
+     // Fallback in case of unexpected logic (should not be reached if rules are exhaustive)
+    this.resultClass = 'text-yellow-300';
+    return 'tie';
   }
 
   private displayChoices(playerChoice: GameChoice, computerChoice: GameChoice): void {
@@ -249,8 +260,8 @@ export class RpsPlay implements OnInit, OnDestroy {
     if (!history || history.length === 0) return '-';
     const counts = history.reduce((acc, choice) => { acc[choice] = (acc[choice] || 0) + 1; return acc; }, {} as Record<string, number>);
     const mostFrequent = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-    // Use the 'emoji' property and apply inline style for size
-    return `<div class="flex items-center justify-center"><span style="font-size: 2.5em;">${this.choices[mostFrequent].emoji}</span> <span class="ml-2">${this.choices[mostFrequent].name}</span></div>`;
+    // Use the 'emoji' property
+    return `<div class="flex items-center justify-center"><span style="font-size: 2.5em;">${this.choices[mostFrequent as GameChoice].emoji}</span> <span class="ml-2">${this.choices[mostFrequent as GameChoice].name}</span></div>`;
   }
 
   getHistoryDisplay(history: GameChoice[]): string {
@@ -349,5 +360,20 @@ export class RpsPlay implements OnInit, OnDestroy {
 
   backToMenu(): void {
     this.router.navigate(['/']);
+  }
+
+  get gridColsClass(): string {
+    switch (this.choiceKeys.length) {
+      case 3:
+        return 'grid-cols-3';
+      case 4:
+        return 'grid-cols-4';
+      default:
+        return 'grid-cols-3'; // Fallback
+    }
+  }
+
+   private updateGameTitle(): void {
+    this.title = this.choiceKeys.map((key: any) => this.choices[key].name).join(', ');
   }
 }

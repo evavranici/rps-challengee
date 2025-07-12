@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Player } from '../../shared/interfaces/player.interface';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-import { PlayerService } from '../../shared/services/player-service';
+import { PlayerService } from '../../shared/services/player.service';
 
 @Component({
   selector: 'app-home',

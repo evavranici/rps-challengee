@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { Player } from '../../shared/interfaces/player.interface';
 import { ApiService } from '../../shared/services/api.service';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-import { PlayerService } from '../../shared/services/player-service';
+import { PlayerService } from '../../shared/services/player.service';
 
 @Component({
   selector: 'app-add-player',

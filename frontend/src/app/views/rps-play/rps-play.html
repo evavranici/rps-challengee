@@ -17,7 +17,7 @@
     <div class="hud-display p-6 md:p-8">
 
       <header class="text-center mb-6">
-        <h1 id="main-title" class="font-orbitron text-3xl md:text-5xl font-bold tracking-wider text-cyan-300">Rock, Paper, Scissors</h1>
+        <h1 id="main-title" class="font-orbitron text-3xl md:text-4xl font-bold tracking-wider text-cyan-300">{{ title }}</h1>
       </header>
 
       <div class="flex justify-between items-center mb-6 bg-black bg-opacity-30 p-4 rounded-lg">
@@ -51,31 +51,17 @@
 
       <div id="player-controls">
         <h2 id="controls-title" class="text-center font-orbitron text-2xl mb-6 text-cyan-200">CHOOSE YOUR WEAPON</h2>
-        <div class="grid grid-cols-3 gap-4 md:gap-8">
-          <button (click)="makeChoice('rock')" id="rock" class="choice-card bg-gray-800 bg-opacity-50 p-4 rounded-lg border-2 border-transparent hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  [disabled]="isPlaying">
-            <div class="w-full h-20 md:h-32 flex items-center justify-center">
-              <span class="text-[80px]">✊</span>
-            </div>
-            <p class="text-center font-semibold text-lg mt-2">Rock</p>
-            <p class="text-center text-sm text-gray-400">Beats Scissors</p>
-          </button>
-          <button (click)="makeChoice('paper')" id="paper" class="choice-card bg-gray-800 bg-opacity-50 p-4 rounded-lg border-2 border-transparent hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  [disabled]="isPlaying">
-            <div class="w-full h-20 md:h-32 flex items-center justify-center">
-              <span class="text-[80px]">✋</span>
-            </div>
-            <p class="text-center font-semibold text-lg mt-2">Paper</p>
-            <p class="text-center text-sm text-gray-400">Beats Rock</p>
-          </button>
-          <button (click)="makeChoice('scissors')" id="scissors" class="choice-card bg-gray-800 bg-opacity-50 p-4 rounded-lg border-2 border-transparent hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  [disabled]="isPlaying">
-            <div class="w-full h-20 md:h-32 flex items-center justify-center">
-              <span class="text-[80px]">✌️</span>
-            </div>
-            <p class="text-center font-semibold text-lg mt-2">Scissors</p>
-            <p class="text-center text-sm text-gray-400">Beats Paper</p>
-          </button>
+        <div class="grid gap-4 md:gap-8" [ngClass]="gridColsClass">
+          <app-card-choice
+            *ngFor="let choice of choiceKeys"
+            [id]="choice"
+            [choiceKey]="choice"
+            [emoji]="choices[choice].emoji"
+            [name]="choices[choice].name"
+            [rule]="'Beats ' + choices[choice].beats.join(', ')"
+            [isDisabled]="isPlaying"
+            (choiceMade)="makeChoice($event)">
+          </app-card-choice>
         </div>
       </div>
 
