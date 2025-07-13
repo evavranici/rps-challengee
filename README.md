@@ -192,19 +192,23 @@ rps-challengee/
 
 ## 🔮 Future Enhancements
 
-🔐 User Authentication for Login & delete
+🔐 User Login & User Delete
 
 💾 Persistent Database (e.g., PostgreSQL)
-
-📈 Grafana Dashboards
 
 🧠 Smarter Computer AI
 
 🏆 More Game Modes (Best of 3, Tournaments)
 
-🎨 Custom Player Icons
+🎛️ Introduce Toogle for mode switching (with/without 'Well')
 
 📱 Make UI Mobile friendly
+
+🎨 Custom Player Icons
+
+📈 Grafana Dashboards
+
+🔤 Handle translations
 
 
 
