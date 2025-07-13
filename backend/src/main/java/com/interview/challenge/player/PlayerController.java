@@ -4,8 +4,10 @@ import com.interview.challenge.dto.LeaderboardPlayerStatsDto;
 import com.interview.challenge.dto.PlayerSimplifiedDto;
 import com.interview.challenge.player.stats.PlayerStats;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +36,15 @@ public class PlayerController {
 
     @Operation(summary = "Get all registered players",
             description = "Retrieves a list of all existing players in the game.")
-    @ApiResponse(responseCode = "200", description = "Successfully retrieved list of players",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = PlayerSimplifiedDto.class)))
+    @ApiResponse(
+            responseCode = "200",
+            description = "Successfully retrieved list of players",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    array = @ArraySchema(schema = @Schema(implementation = PlayerSimplifiedDto.class))
+
+            )
+    )
     @ApiResponse(responseCode = "404", description = "Players not found")
     @GetMapping
     public ResponseEntity<List<PlayerSimplifiedDto>> getAllPlayers() {
@@ -46,9 +54,14 @@ public class PlayerController {
 
     @Operation(summary = "Create a new player",
             description = "Registers a new player in the game with a unique name and an optional icon.")
-    @ApiResponse(responseCode = "201", description = "Player created successfully",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = Player.class)))
+    @ApiResponse(
+            responseCode = "201",
+            description = "Player created successfully",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = Player.class)
+            )
+    )
     @ApiResponse(responseCode = "400", description = "Invalid player data provided",
             content = @Content(mediaType = "text/plain")) // Example for plain text error
     @PostMapping
@@ -65,7 +78,13 @@ public class PlayerController {
     }
 
     @Operation(summary = "Get player by ID", description = "Retrieves a single player's details by their ID.")
-    @ApiResponse(responseCode = "200", description = "Player found")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Player found",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE
+            )
+    )
     @ApiResponse(responseCode = "404", description = "Player not found")
     @GetMapping("/{id}")
     public ResponseEntity<Player> getPlayerById(@Parameter(description = "ID of the player to retrieve", required = true) @PathVariable Long id) {
@@ -75,11 +94,19 @@ public class PlayerController {
     }
 
     @Operation(summary = "Update player's stats", description = "Update a player's stats from a game round.")
-    @ApiResponse(responseCode = "201", description = "Update stats successfully",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = PlayerStats.class)))
-    @ApiResponse(responseCode = "400", description = "Invalid player stats data provided",
-            content = @Content(mediaType = "text/plain"))
+    @ApiResponse(
+            responseCode = "201",
+            description = "Update stats successfully",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = Player.class)
+            )
+    )
+    @ApiResponse(
+            responseCode = "400",
+            description = "Invalid player stats data provided",
+            content = @Content(mediaType = "text/plain")
+    )
     @PutMapping("/{id}/stats")
     public ResponseEntity<Player> updatePlayerStats(
             @PathVariable Long id,
@@ -101,7 +128,13 @@ public class PlayerController {
     @Operation(summary = "Reset player's score",
             description = "Resets the wins and games played for a specific player to zero. " +
                     "Acting as a 'new' player for ranking purposes.")
-    @ApiResponse(responseCode = "200", description = "Player score reset successfully")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Player score reset successfully",
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE
+            )
+    )
     @ApiResponse(responseCode = "404", description = "Player not found")
     @PutMapping("/{id}/reset-stats") // Use PUT bc it's an update
     public ResponseEntity<Player> resetPlayerStats(@Parameter(description = "ID of the player to reset score for", required = true) @PathVariable Long id) {
@@ -116,10 +149,13 @@ public class PlayerController {
     @Operation(summary = "Get Leaderboard",
             description = "Retrieves the Leaderboard by Wilson Score.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved leaderboard",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = LeaderboardPlayerStatsDto.class)))
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    array = @ArraySchema(schema = @Schema(implementation = LeaderboardPlayerStatsDto.class))
+            )
+    )
     @GetMapping("/leaderboard-stats")
-    public List<LeaderboardPlayerStatsDto> getDashboardStats() {
+    public List<LeaderboardPlayerStatsDto> getLeaderboardStats() {
         List<Player> players = playerService.findAll();
         List<LeaderboardPlayerStatsDto> stats = players.stream()
                 .map(player -> {
