@@ -11,16 +11,20 @@ import {
 import { of } from 'rxjs';
 import { ApiService } from '../../shared/services/api.service';
 import * as PlayersActions from './players.actions';
-import * as LeaderboardSelectors from './players.selectors';
+import * as PlayersSelectors from './players.selectors';
+import * as LeaderboardActions from '../leaderboard/leaderboard.actions';
 import { Store } from '@ngrx/store';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class PlayersEffects {
   private actions$ = inject(Actions);
   private apiService = inject(ApiService);
   private store = inject(Store<PlayersEffects>);
+  private router = inject(Router);
 
   players$;
+  createPlayer$;
 
   constructor() {
     console.log('[PlayersEffects] Constructor initialized.');
@@ -32,7 +36,7 @@ export class PlayersEffects {
         ),
         ofType(PlayersActions.loadPlayers),
         withLatestFrom(
-          this.store.select(LeaderboardSelectors.selectPlayersIsStale)
+          this.store.select(PlayersSelectors.selectPlayersIsStale)
         ),
         filter(([, isStale]) => isStale),
         switchMap(() => {
@@ -44,6 +48,42 @@ export class PlayersEffects {
             )
           );
         })
+      )
+    );
+
+    this.createPlayer$ = createEffect(() =>
+      this.actions$.pipe(
+        ofType(PlayersActions.createPlayer),
+        tap((action) =>
+          console.log(
+            '[PlayersEffects] Create Player action received:',
+            action.player.name
+          )
+        ),
+        switchMap((action) =>
+          this.apiService.createPlayer(action.player).pipe(
+            map((createdPlayer) => {
+              console.log(
+                '[PlayersEffects] Player created successfully:',
+                createdPlayer.name
+              );
+              // Also dispatch markPlayersStale to ensure the player list is reloaded
+              this.store.dispatch(PlayersActions.markPlayersStale());
+              this.store.dispatch(LeaderboardActions.markLeaderboardStale());
+              this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
+              // Navigate to the new player's game page
+              this.router.navigate(['/rps-play', createdPlayer.id]);
+              return PlayersActions.createPlayerSuccess({
+                player: createdPlayer,
+              });
+            }),
+            catchError((error) => {
+              console.error('[PlayersEffects] Failed to create player:', error);
+              // You might want to show a user-friendly error message here
+              return of(PlayersActions.createPlayerFailure({ error }));
+            })
+          )
+        )
       )
     );
   }

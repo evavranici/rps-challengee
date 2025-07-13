@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.interview</groupId>
-	<artifactId>challenge</artifactId>
+	<artifactId>rps-challenge</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>rps-game</name>
 	<description>Rock Paper Scissors Game</description>

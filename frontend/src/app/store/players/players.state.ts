@@ -1,7 +1,7 @@
-import { Player } from '../../shared/interfaces/player.interface';
+import { PlayerSimplifiedDto } from '../../api/models';
 
 export interface PlayersState {
-  data: Player[];
+  data: PlayerSimplifiedDto[];
   isLoading: boolean;
   error: unknown | null;
   isStale: boolean;

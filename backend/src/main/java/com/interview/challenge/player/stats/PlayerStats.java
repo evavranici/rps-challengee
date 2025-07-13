@@ -1,7 +1,6 @@
 package com.interview.challenge.player.stats;
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Convert;
+import jakarta.persistence.*;
 import com.interview.challenge.shared.GameChoiceConverter;
 
 import java.util.ArrayList;
@@ -9,7 +8,18 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Embeddable // marking this class as embeddable within another entity
-@Schema(description = "Detailed game statistics for a player")
+@Schema(
+        description = "Detailed game statistics for a player",
+        requiredProperties = {
+                "playerScore",
+                "computerScore",
+                "playerWins",
+                "computerWins",
+                "playerHistory",
+                "computerHistory",
+                "totalRounds",
+        }
+)
 public class PlayerStats {
     // getters and setters
     @Schema(description = "The player's current score (points for wins)", example = "1")
@@ -24,13 +34,17 @@ public class PlayerStats {
     @Schema(description = "Number of rounds the computer has won against this player", example = "1")
     private int computerWins = 0;
 
+    @ElementCollection(targetClass = GameChoice.class)
+    @Enumerated(EnumType.STRING)
     @Schema(description = "History of player's choices (e.g., 'rock', 'paper')", example = "[\"scissors\", \"scissors\"]")
-    @Convert(converter = GameChoiceConverter.class) // Custom converter for List<GameChoice>
-    private List<String> playerHistory = new ArrayList<>(); // Store as String for simplicity or create enum/converter
+    @Convert(converter = GameChoiceConverter.class)
+    private List<GameChoice> playerHistory = new ArrayList<>();
 
+    @ElementCollection(targetClass = GameChoice.class)
+    @Enumerated(EnumType.STRING)
     @Schema(description = "History of computer's choices against this player", example = "[\"paper\", \"rock\"]")
     @Convert(converter = GameChoiceConverter.class)
-    private List<String> computerHistory = new ArrayList<>();
+    private List<GameChoice> computerHistory = new ArrayList<>();
 
     @Schema(description = "Total number of rounds played by this player", example = "2")
     private int totalRounds = 0;
@@ -67,17 +81,17 @@ public class PlayerStats {
         this.computerWins = computerWins;
     }
 
-    public List<String> getPlayerHistory() {
+    public List<GameChoice> getPlayerHistory() {
         return playerHistory;
     }
-    public void setPlayerHistory(List<String> playerHistory) {
+    public void setPlayerHistory(List<GameChoice> playerHistory) {
         this.playerHistory = playerHistory;
     }
 
-    public List<String> getComputerHistory() {
+    public List<GameChoice> getComputerHistory() {
         return computerHistory;
     }
-    public void setComputerHistory(List<String> computerHistory) {
+    public void setComputerHistory(List<GameChoice> computerHistory) {
         this.computerHistory = computerHistory;
     }
 

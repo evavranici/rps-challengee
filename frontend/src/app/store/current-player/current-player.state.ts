@@ -1,4 +1,4 @@
-import { Player } from '../../shared/interfaces/player.interface';
+import { Player } from '../../api/models';
 
 //  the details of the player selected to play
 export interface CurrentPlayerState {

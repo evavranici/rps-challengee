@@ -1,10 +1,20 @@
 package com.interview.challenge.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Getter;
-import lombok.Setter;
+//import lombok.Getter;
+//import lombok.Setter;
 
-@Schema(description = "Data Transfer Object for Leaderboard Player Stats displayed on the Leaderboard.")
+@Schema(
+        description = "Data Transfer Object for Leaderboard Player Stats displayed on the Leaderboard.",
+        requiredProperties = {
+                "id",
+                "name",
+                "icon",
+                "winPercentage",
+                "gamesPlayed",
+                "score",
+        }
+)
 public class LeaderboardPlayerStatsDto {
     // getters and setters
     @Schema(description = "Unique identifier of the player", example = "1")

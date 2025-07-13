@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Player } from '../../shared/interfaces/player.interface';
+import { Player, PlayerSimplifiedDto } from '../../api/models';
 
 /**
  * Action to initiate loading of players data.
@@ -11,7 +11,7 @@ export const loadPlayers = createAction('[Players] Load Players');
  */
 export const loadPlayersSuccess = createAction(
   '[Players] Load Players Success',
-  props<{ data: Player[] }>()
+  props<{ data: PlayerSimplifiedDto[] }>()
 );
 
 /**
@@ -26,3 +26,24 @@ export const loadPlayersFailure = createAction(
  * Action to explicitly mark players data as stale.
  */
 export const markPlayersStale = createAction('[Players] Mark Players Stale');
+
+export const createPlayer = createAction(
+  '[Players] Create Player',
+  props<{ player: Player }>()
+);
+
+/**
+ * Action dispatched upon successful creation of a player.
+ */
+export const createPlayerSuccess = createAction(
+  '[Players] Create Player Success',
+  props<{ player: Player }>()
+);
+
+/**
+ * Action dispatched when creation of a player fails.
+ */
+export const createPlayerFailure = createAction(
+  '[Players] Create Player Failure',
+  props<{ error: unknown }>()
+);

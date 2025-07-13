@@ -14,7 +14,7 @@ export const leaderboardReducer = createReducer(
   }),
   on(LeaderboardActions.loadLeaderboardStatsSuccess, (state, { data }) => ({
     ...state,
-    data: data.map((player, index) => ({ ...player, rank: index + 1 })),
+    data: data.map((player) => ({ ...player })),
     isLoading: false,
     error: null,
     isStale: false, // marking data as fresh

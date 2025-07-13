@@ -1,8 +1,17 @@
 package com.interview.challenge.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+//import lombok.Getter;
+//import lombok.Setter;
 
-@Schema(description = "Summary of a player's basic information")
+@Schema(
+        description = "Summary of a player's basic information",
+        requiredProperties = {
+                "id",
+                "name",
+                "icon",
+        }
+)
 public class PlayerSimplifiedDto {
     // getters and setters
     @Schema(description = "Unique identifier of the player")

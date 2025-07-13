@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ferdikoomen/openapi-typescript-codegen/master/schemas/config.json",
+  "input": "./src/assets/api-docs.json",
+  "output": "./src/app/api",
+  "client": "angular",
+  "useUnionType": true,
+  "exportCore": true,
+  "exportServices": true,
+  "exportModels": true,
+  "postfixModels": "Dto",
+  "indent": "2",
+  "enumStyle": "PascalCase"
+}

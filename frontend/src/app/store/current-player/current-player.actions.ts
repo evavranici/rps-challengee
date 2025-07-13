@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Player, PlayerStats } from '../../shared/interfaces/player.interface';
+import { Player, PlayerStats } from '../../api/models';
 
 export const loadCurrentPlayer = createAction(
   '[Current Player] Load Current Player',

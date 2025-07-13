@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
+import { LeaderboardPlayerStatsDto } from '../../api/models';
 
 export const loadLeaderboardStats = createAction(
   '[Leaderboard] Load Leaderboard Stats'
@@ -7,7 +7,7 @@ export const loadLeaderboardStats = createAction(
 
 export const loadLeaderboardStatsSuccess = createAction(
   '[Leaderboard] Load Leaderboard Stats Success',
-  props<{ data: LeaderboardPlayerStats[] }>()
+  props<{ data: LeaderboardPlayerStatsDto[] }>()
 );
 
 export const loadLeaderboardStatsFailure = createAction(

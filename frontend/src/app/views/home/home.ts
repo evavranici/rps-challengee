@@ -2,7 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Player } from '../../shared/interfaces/player.interface';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
 import { Store } from '@ngrx/store';
 import * as LeaderboardActions from '../../store/leaderboard/leaderboard.actions';
@@ -10,6 +9,7 @@ import * as PlayersActions from '../../store/players/players.actions';
 import * as PlayersSelectors from '../../store/players/players.selectors';
 import { Observable } from 'rxjs';
 import { RootState } from '../../store/root.state';
+import { Player, PlayerSimplifiedDto } from '../../api/models';
 
 @Component({
   selector: 'app-home',
@@ -22,8 +22,8 @@ export class Home implements OnInit {
   private router = inject(Router);
   private store = inject(Store<RootState>);
 
-  players$: Observable<Player[]>;
-  selectedPlayer: Player | null = null;
+  players$: Observable<PlayerSimplifiedDto[]>;
+  selectedPlayer: PlayerSimplifiedDto | null = null;
 
   constructor() {
     this.players$ = this.store.select(PlayersSelectors.selectPlayersData);
@@ -34,7 +34,7 @@ export class Home implements OnInit {
     this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
   }
 
-  selectPlayer(player: Player): void {
+  selectPlayer(player: PlayerSimplifiedDto): void {
     this.selectedPlayer = player;
     this.router.navigate(['/rps-play', this.selectedPlayer.id]);
   }

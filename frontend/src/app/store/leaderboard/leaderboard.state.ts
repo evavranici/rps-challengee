@@ -1,9 +1,9 @@
-import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
+import { LeaderboardPlayerStatsDto } from '../../api/models';
 
 export const leaderboardFeatureKey = 'leaderboard';
 
 export interface LeaderboardState {
-  data: LeaderboardPlayerStats[];
+  data: LeaderboardPlayerStatsDto[];
   isLoading: boolean;
   error: unknown | null;
   isStale: boolean; // if the cached data is considered stale and needs refetching

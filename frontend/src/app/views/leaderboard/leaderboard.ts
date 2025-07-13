@@ -2,12 +2,12 @@ import { Component, inject, Input, OnInit } from '@angular/core';
 import { CommonModule, DecimalPipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { CustomizedButton } from '../../components/customized-button/customized-button';
-import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
 import { Observable } from 'rxjs';
 import { select, Store } from '@ngrx/store';
 import { LeaderboardState } from '../../store/leaderboard/leaderboard.state';
 import * as LeaderboardSelectors from '../../store/leaderboard/leaderboard.selectors';
 import * as LeaderboardActions from '../../store/leaderboard/leaderboard.actions';
+import { LeaderboardPlayerStatsDto } from '../../api/models';
 
 @Component({
   selector: 'app-leaderboard',
@@ -22,7 +22,7 @@ export class Leaderboard implements OnInit {
 
   @Input() showBackBtn: boolean = true;
 
-  leaderboardData$: Observable<LeaderboardPlayerStats[]>;
+  leaderboardData$: Observable<LeaderboardPlayerStatsDto[]>;
   isLoading$: Observable<boolean>;
   error$: Observable<unknown>;
 

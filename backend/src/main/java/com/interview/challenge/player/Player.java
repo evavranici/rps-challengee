@@ -9,7 +9,14 @@ import jakarta.persistence.Embedded;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity // marking as a JPA entity for database mapping
-@Schema(description = "Represents a player in the RPS game")
+@Schema(
+        description = "Represents a player in the RPS game",
+        requiredProperties = {
+                "name",
+                "icon",
+                "stats",
+        }
+)
 public class Player {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

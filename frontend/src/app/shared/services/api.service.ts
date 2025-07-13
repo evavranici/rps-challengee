@@ -1,8 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Player, PlayerStats } from '../interfaces/player.interface';
 import { Observable } from 'rxjs';
-import { LeaderboardPlayerStats } from '../interfaces/leaderboard.interface';
+import {
+  LeaderboardPlayerStatsDto,
+  Player,
+  PlayerSimplifiedDto,
+  PlayerStats,
+} from '../../api/models';
 
 @Injectable({
   providedIn: 'root',
@@ -12,8 +16,10 @@ export class ApiService {
   private backendApiPrefix = 'http://localhost:8080/api';
 
   // player related
-  getAllPlayers(): Observable<Player[]> {
-    return this.http.get<Player[]>(`${this.backendApiPrefix}/players`);
+  getAllPlayers(): Observable<PlayerSimplifiedDto[]> {
+    return this.http.get<PlayerSimplifiedDto[]>(
+      `${this.backendApiPrefix}/players`
+    );
   }
 
   getPlayerById(id: number): Observable<Player> {
@@ -39,8 +45,8 @@ export class ApiService {
   }
 
   // leaderboard related
-  getLeaderboardPlayerStats(): Observable<LeaderboardPlayerStats[]> {
-    return this.http.get<LeaderboardPlayerStats[]>(
+  getLeaderboardPlayerStats(): Observable<LeaderboardPlayerStatsDto[]> {
+    return this.http.get<LeaderboardPlayerStatsDto[]>(
       `${this.backendApiPrefix}/players/leaderboard-stats`
     );
   }

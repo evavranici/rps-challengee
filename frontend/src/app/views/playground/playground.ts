@@ -11,8 +11,6 @@ import {
   ChoiceDefinition,
   GameChoice,
   newStats,
-  Player,
-  PlayerStats,
 } from '../../shared/interfaces/player.interface';
 import { Observable, Subject, takeUntil, firstValueFrom } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -24,10 +22,14 @@ import { CardChoice } from '../../components/card-choice/card-choice';
 import { GameConfigService } from '../../shared/services/game-config.service';
 import { select, Store } from '@ngrx/store';
 import { RootState } from '../../store/root.state';
-import { LeaderboardPlayerStats } from '../../shared/interfaces/leaderboard.interface';
 import * as LeaderboardSelectors from '../../store/leaderboard/leaderboard.selectors';
 import * as CurrentPlayerActions from '../../store/current-player/current-player.actions';
 import * as CurrentPlayerSelectors from '../../store/current-player/current-player.selectors';
+import {
+  LeaderboardPlayerStatsDto,
+  Player,
+  PlayerStats,
+} from '../../api/models';
 
 const ANIMATION_DELAY_INITIAL = 50;
 const ANIMATION_DELAY_SHOW_MOVES = 500;
@@ -76,11 +78,11 @@ export class Playground implements OnInit, OnDestroy {
   choices: Record<GameChoice, ChoiceDefinition>;
   choiceKeys: GameChoice[];
 
-  leaderboardData$: Observable<LeaderboardPlayerStats[]>;
+  leaderboardData$: Observable<LeaderboardPlayerStatsDto[]>;
   leaderboardIsLoading$: Observable<boolean>;
   leaderboardError$: Observable<unknown>;
 
-  current_player$: Observable<Player | null>; // Observable for the current player from the store
+  currentPlayer$: Observable<Player | null>; // Observable for the current player from the store
   currentPlayerIsLoading$: Observable<boolean>;
   currentPlayerError$: Observable<unknown>;
 
@@ -100,7 +102,7 @@ export class Playground implements OnInit, OnDestroy {
       select(LeaderboardSelectors.selectLeaderboardError)
     );
 
-    this.current_player$ = this.store.pipe(
+    this.currentPlayer$ = this.store.pipe(
       select(CurrentPlayerSelectors.selectCurrentPlayer)
     );
     this.currentPlayerIsLoading$ = this.store.pipe(
@@ -124,7 +126,7 @@ export class Playground implements OnInit, OnDestroy {
       }
     });
 
-    this.current_player$.pipe(takeUntil(this.destroy$)).subscribe((player) => {
+    this.currentPlayer$.pipe(takeUntil(this.destroy$)).subscribe((player) => {
       if (player) {
         this.updateUIDisplay(player);
       } else {
@@ -174,31 +176,33 @@ export class Playground implements OnInit, OnDestroy {
   async makeChoice(playerChoice: GameChoice): Promise<void> {
     console.log('Player choice:', playerChoice);
 
-    const player = await firstValueFrom(this.current_player$);
+    const player = await firstValueFrom(this.currentPlayer$);
 
-    if (this.isPlaying || !player) {
+    if (this.isPlaying) {
+      console.warn('Game is already in progress. Ignoring new choice.');
+      return;
+    }
+    if (!player || player.id === null) {
+      console.error(
+        'Cannot make choice: Current player is not loaded or has no ID.'
+      );
+      this.router.navigate(['/']);
       return;
     }
 
     this.isPlaying = true;
     this.playerChoiceDisplay = '';
     this.computerChoiceDisplay = '';
+    this.countdownText = '';
 
-    const computerChoice: GameChoice = this.getComputerChoice();
+    const computerChoice = this.getComputerChoice();
     const winner = this.getWinner(playerChoice, computerChoice);
-
-    // Create a NEW stats object to maintain immutability
-    const updatedStats = player.stats ? { ...player.stats } : { ...newStats };
-
-    // Update history arrays immutably by creating new arrays
-    updatedStats.playerHistory = [...updatedStats.playerHistory, playerChoice];
-    updatedStats.computerHistory = [
-      ...updatedStats.computerHistory,
+    const updatedStats = this.updateStats(
+      playerChoice,
       computerChoice,
-    ];
-    updatedStats.totalRounds++;
-
-    this.updateScore(winner, updatedStats); // Update scores on the new stats object
+      winner,
+      player
+    );
 
     await this.startCountdown();
     this.displayChoices(playerChoice, computerChoice);
@@ -209,7 +213,7 @@ export class Playground implements OnInit, OnDestroy {
       // Use 'player.id' here
       this.store.dispatch(
         CurrentPlayerActions.updateCurrentPlayerStats({
-          playerId: player.id,
+          playerId: player.id || 0, // Fallback to 0 if player.id is null
           stats: updatedStats,
         })
       );
@@ -218,7 +222,8 @@ export class Playground implements OnInit, OnDestroy {
       console.error(
         'Cannot update player stats: Player ID or stats are missing.'
       );
-      this.isPlaying = false; // Re-enable buttons if update cannot be dispatched
+      this.isPlaying = false; // Re-enable buttons
+      this.countdownText = '';
     }
   }
 
@@ -243,7 +248,7 @@ export class Playground implements OnInit, OnDestroy {
     });
   }
 
-  private getComputerChoice(): GameChoice {
+  private getComputerChoice() {
     return this.choiceKeys[Math.floor(Math.random() * this.choiceKeys.length)];
   }
 
@@ -296,17 +301,31 @@ export class Playground implements OnInit, OnDestroy {
             </div>`;
   }
 
-  private updateScore(
+  private updateStats(
+    playerChoice: GameChoice,
+    computerChoice: GameChoice,
     winner: 'player' | 'computer' | 'tie',
-    stats: PlayerStats
-  ): void {
+    player: Player
+  ): PlayerStats {
+    const updatedStats = player.stats ? { ...player.stats } : { ...newStats };
+
+    // Create a NEW stats object to maintain immutability
+    updatedStats.playerHistory = [...updatedStats.playerHistory, playerChoice];
+    updatedStats.computerHistory = [
+      ...updatedStats.computerHistory,
+      computerChoice,
+    ];
+    updatedStats.totalRounds = (updatedStats.totalRounds ?? 0) + 1;
+
     if (winner === 'player') {
-      stats.playerScore++;
-      stats.playerWins++;
+      updatedStats.playerScore = (updatedStats.playerScore ?? 0) + 1;
+      updatedStats.playerWins = (updatedStats.playerWins ?? 0) + 1;
     } else if (winner === 'computer') {
-      stats.computerScore++;
-      stats.computerWins++;
+      updatedStats.computerScore = (updatedStats.computerScore ?? 0) + 1;
+      updatedStats.computerWins = (updatedStats.computerWins ?? 0) + 1;
     }
+
+    return updatedStats;
   }
 
   private updateUIDisplay(player: Player): void {
@@ -459,11 +478,13 @@ export class Playground implements OnInit, OnDestroy {
   }
 
   async resetPlaysStats(): Promise<void> {
-    const player = await firstValueFrom(this.current_player$);
+    const player = await firstValueFrom(this.currentPlayer$);
 
     if (player && player.id !== null) {
       this.store.dispatch(
-        CurrentPlayerActions.resetCurrentPlayerStats({ playerId: player.id })
+        CurrentPlayerActions.resetCurrentPlayerStats({
+          playerId: player.id || 0,
+        })
       );
     } else {
       console.error('Cannot reset player stats: Player ID is missing.');
@@ -487,7 +508,7 @@ export class Playground implements OnInit, OnDestroy {
 
   private updateGameTitle(): void {
     this.title = this.choiceKeys
-      .map((key: GameChoice) => this.choices[key].name)
+      .map((key) => this.choices[key].name)
       .join(', ');
   }
 }

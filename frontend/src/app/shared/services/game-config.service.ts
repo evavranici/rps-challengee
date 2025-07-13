@@ -11,7 +11,7 @@ import {
   providedIn: 'root',
 })
 export class GameConfigService {
-  private mode: GameMode = GameMode.Classic; // you can change the mode here
+  private mode: GameMode = GameMode.Extended; // you can change the mode here
 
   get choices() {
     return this.getGameConfig(this.mode).choices;
