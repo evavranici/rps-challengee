@@ -1,6 +1,7 @@
 package com.interview.challenge.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 //import lombok.Getter;
 //import lombok.Setter;
 
@@ -14,12 +15,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 )
 public class PlayerSimplifiedDto {
     // getters and setters
+    @NotNull(message = "Id cannot be null")
     @Schema(description = "Unique identifier of the player")
     private Long id;
 
+    @NotBlank(message = "Name cannot be blank")
     @Schema(description = "Name of the player")
     private String name;
 
+    @NotBlank(message = "Icon cannot be blank")
     @Schema(description = "Icon representing the player")
     private String icon;
 

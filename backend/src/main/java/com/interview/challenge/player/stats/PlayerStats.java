@@ -1,6 +1,7 @@
 package com.interview.challenge.player.stats;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import com.interview.challenge.shared.GameChoiceConverter;
 
 import java.util.ArrayList;
@@ -22,15 +23,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 )
 public class PlayerStats {
     // getters and setters
+    @Min(value = 0, message = "Score cannot be negative")
     @Schema(description = "The player's current score (points for wins)", example = "1")
     private int playerScore = 0;
 
+    @Min(value = 0, message = "Score cannot be negative")
     @Schema(description = "The computer's current score (points from player's losses)", example = "1")
     private int computerScore = 0;
 
+    @Min(value = 0, message = "Nr. of rounds cannot be negative")
     @Schema(description = "Number of rounds the player has won", example = "1")
     private int playerWins = 0;
 
+    @Min(value = 0, message = "Nr. of rounds cannot be negative")
     @Schema(description = "Number of rounds the computer has won against this player", example = "1")
     private int computerWins = 0;
 
@@ -46,6 +51,7 @@ public class PlayerStats {
     @Convert(converter = GameChoiceConverter.class)
     private List<GameChoice> computerHistory = new ArrayList<>();
 
+    @Min(value = 0, message = "Total nr. of rounds cannot be negative")
     @Schema(description = "Total number of rounds played by this player", example = "2")
     private int totalRounds = 0;
 

@@ -1,6 +1,7 @@
 package com.interview.challenge.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.*;
 //import lombok.Getter;
 //import lombok.Setter;
 
@@ -17,18 +18,22 @@ import io.swagger.v3.oas.annotations.media.Schema;
 )
 public class LeaderboardPlayerStatsDto {
     // getters and setters
+    @NotNull(message = "Id cannot be null")
     @Schema(description = "Unique identifier of the player", example = "1")
     private Long id;
 
+    @NotBlank(message = "Name is required")
     @Schema(description = "Name of the player", example = "Woman Pilot")
     private String name;
 
+    @NotBlank(message = "Icon is required")
     @Schema(description = "Emoji icon representing the player", example = "✈️")
     private String icon;
 
     @Schema(description = "Win percentage of the player", example = "77.0")
     private double winPercentage;
 
+    @Min(value = 0, message = "Games played cannot be negative")
     @Schema(description = "Total number of games played by the player", example = "33")
     private int gamesPlayed;
 

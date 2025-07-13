@@ -127,10 +127,6 @@
           "required": true
         },
         "responses": {
-          "400": {
-            "description": "Invalid player data provided",
-            "content": { "text/plain": {} }
-          },
           "201": {
             "description": "Player created successfully",
             "content": {
@@ -138,6 +134,10 @@
                 "schema": { "$ref": "#/components/schemas/Player" }
               }
             }
+          },
+          "400": {
+            "description": "Invalid player data provided",
+            "content": { "text/plain": {} }
           }
         }
       }
@@ -210,24 +210,28 @@
         "type": "object",
         "properties": {
           "playerScore": {
+            "minimum": 0,
             "type": "integer",
             "description": "The player's current score (points for wins)",
             "format": "int32",
             "example": 1
           },
           "computerScore": {
+            "minimum": 0,
             "type": "integer",
             "description": "The computer's current score (points from player's losses)",
             "format": "int32",
             "example": 1
           },
           "playerWins": {
+            "minimum": 0,
             "type": "integer",
             "description": "Number of rounds the player has won",
             "format": "int32",
             "example": 1
           },
           "computerWins": {
+            "minimum": 0,
             "type": "integer",
             "description": "Number of rounds the computer has won against this player",
             "format": "int32",
@@ -256,6 +260,7 @@
             }
           },
           "totalRounds": {
+            "minimum": 0,
             "type": "integer",
             "description": "Total number of rounds played by this player",
             "format": "int32",
@@ -339,6 +344,7 @@
             "example": 77.0
           },
           "gamesPlayed": {
+            "minimum": 0,
             "type": "integer",
             "description": "Total number of games played by the player",
             "format": "int32",
