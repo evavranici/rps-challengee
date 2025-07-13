@@ -41,7 +41,7 @@ export class PlayersEffects {
         filter(([, isStale]) => isStale),
         switchMap(() => {
           console.log('[PlayersEffects] Fetching players from API...');
-          return this.apiService.getAllPlayers().pipe(
+          return this.apiService.getPlayers().pipe(
             map((data) => PlayersActions.loadPlayersSuccess({ data })),
             catchError((error) =>
               of(PlayersActions.loadPlayersFailure({ error }))
@@ -61,7 +61,7 @@ export class PlayersEffects {
           )
         ),
         switchMap((action) =>
-          this.apiService.createPlayer(action.player).pipe(
+          this.apiService.createNewPlayer(action.player).pipe(
             map((createdPlayer) => {
               console.log(
                 '[PlayersEffects] Player created successfully:',

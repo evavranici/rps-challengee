@@ -8,7 +8,6 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { Player } from '../../models/player';
 
 export interface GetPlayerById$Params {
 
@@ -18,18 +17,18 @@ export interface GetPlayerById$Params {
   id: number;
 }
 
-export function getPlayerById(http: HttpClient, rootUrl: string, params: GetPlayerById$Params, context?: HttpContext): Observable<StrictHttpResponse<Player>> {
+export function getPlayerById(http: HttpClient, rootUrl: string, params: GetPlayerById$Params, context?: HttpContext): Observable<StrictHttpResponse<any>> {
   const rb = new RequestBuilder(rootUrl, getPlayerById.PATH, 'get');
   if (params) {
     rb.path('id', params.id, {});
   }
 
   return http.request(
-    rb.build({ responseType: 'blob', accept: '*/*', context })
+    rb.build({ responseType: 'json', accept: 'application/json', context })
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<Player>;
+      return r as StrictHttpResponse<any>;
     })
   );
 }

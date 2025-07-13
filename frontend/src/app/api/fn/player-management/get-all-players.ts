@@ -13,7 +13,7 @@ import { PlayerSimplifiedDto } from '../../models/player-simplified-dto';
 export interface GetAllPlayers$Params {
 }
 
-export function getAllPlayers(http: HttpClient, rootUrl: string, params?: GetAllPlayers$Params, context?: HttpContext): Observable<StrictHttpResponse<PlayerSimplifiedDto>> {
+export function getAllPlayers(http: HttpClient, rootUrl: string, params?: GetAllPlayers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PlayerSimplifiedDto>>> {
   const rb = new RequestBuilder(rootUrl, getAllPlayers.PATH, 'get');
   if (params) {
   }
@@ -23,7 +23,7 @@ export function getAllPlayers(http: HttpClient, rootUrl: string, params?: GetAll
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<PlayerSimplifiedDto>;
+      return r as StrictHttpResponse<Array<PlayerSimplifiedDto>>;
     })
   );
 }

@@ -30,7 +30,7 @@ export class CurrentPlayerEffects {
           )
         ),
         switchMap((action) =>
-          this.apiService.getPlayerById(action.playerId).pipe(
+          this.apiService.getSpecificPlayer(action.playerId).pipe(
             map((player) =>
               CurrentPlayerActions.loadCurrentPlayerSuccess({ player })
             ),
@@ -60,25 +60,29 @@ export class CurrentPlayerEffects {
           )
         ),
         switchMap((action) =>
-          this.apiService.updatePlayerStats(action.playerId, action.stats).pipe(
-            map((player) => {
-              // on a successful player stats update, dispatch success action & mark leaderboard as stale and trigger its reload
-              this.store.dispatch(LeaderboardActions.markLeaderboardStale());
-              this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
-              return CurrentPlayerActions.updateCurrentPlayerStatsSuccess({
-                player,
-              });
-            }),
-            catchError((error) => {
-              console.error(
-                '[CurrentPlayerEffects] Failed to update current player stats:',
-                error
-              );
-              return of(
-                CurrentPlayerActions.updateCurrentPlayerStatsFailure({ error })
-              );
-            })
-          )
+          this.apiService
+            .updateSpecificPlayerStats(action.playerId, action.stats)
+            .pipe(
+              map((player) => {
+                // on a successful player stats update, dispatch success action & mark leaderboard as stale and trigger its reload
+                this.store.dispatch(LeaderboardActions.markLeaderboardStale());
+                this.store.dispatch(LeaderboardActions.loadLeaderboardStats());
+                return CurrentPlayerActions.updateCurrentPlayerStatsSuccess({
+                  player,
+                });
+              }),
+              catchError((error) => {
+                console.error(
+                  '[CurrentPlayerEffects] Failed to update current player stats:',
+                  error
+                );
+                return of(
+                  CurrentPlayerActions.updateCurrentPlayerStatsFailure({
+                    error,
+                  })
+                );
+              })
+            )
         )
       )
     );

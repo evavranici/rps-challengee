@@ -127,6 +127,7 @@ export class Playground implements OnInit, OnDestroy {
     });
 
     this.currentPlayer$.pipe(takeUntil(this.destroy$)).subscribe((player) => {
+      console.log('Current player:', player);
       if (player) {
         this.updateUIDisplay(player);
       } else {
@@ -191,9 +192,8 @@ export class Playground implements OnInit, OnDestroy {
     }
 
     this.isPlaying = true;
-    this.playerChoiceDisplay = '';
-    this.computerChoiceDisplay = '';
     this.countdownText = '';
+    this.clearPlayedCards();
 
     const computerChoice = this.getComputerChoice();
     const winner = this.getWinner(playerChoice, computerChoice);
@@ -486,9 +486,16 @@ export class Playground implements OnInit, OnDestroy {
           playerId: player.id || 0,
         })
       );
+
+      this.clearPlayedCards();
     } else {
       console.error('Cannot reset player stats: Player ID is missing.');
     }
+  }
+
+  clearPlayedCards(): void {
+    this.playerChoiceDisplay = '';
+    this.computerChoiceDisplay = '';
   }
 
   backToMenu(): void {

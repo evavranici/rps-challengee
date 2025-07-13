@@ -10,11 +10,11 @@ import { RequestBuilder } from '../../request-builder';
 
 import { LeaderboardPlayerStatsDto } from '../../models/leaderboard-player-stats-dto';
 
-export interface GetDashboardStats$Params {
+export interface GetLeaderboardStats$Params {
 }
 
-export function getDashboardStats(http: HttpClient, rootUrl: string, params?: GetDashboardStats$Params, context?: HttpContext): Observable<StrictHttpResponse<LeaderboardPlayerStatsDto>> {
-  const rb = new RequestBuilder(rootUrl, getDashboardStats.PATH, 'get');
+export function getLeaderboardStats(http: HttpClient, rootUrl: string, params?: GetLeaderboardStats$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<LeaderboardPlayerStatsDto>>> {
+  const rb = new RequestBuilder(rootUrl, getLeaderboardStats.PATH, 'get');
   if (params) {
   }
 
@@ -23,9 +23,9 @@ export function getDashboardStats(http: HttpClient, rootUrl: string, params?: Ge
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<LeaderboardPlayerStatsDto>;
+      return r as StrictHttpResponse<Array<LeaderboardPlayerStatsDto>>;
     })
   );
 }
 
-getDashboardStats.PATH = '/api/players/leaderboard-stats';
+getLeaderboardStats.PATH = '/api/players/leaderboard-stats';

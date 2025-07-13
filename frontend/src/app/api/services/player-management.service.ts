@@ -15,14 +15,13 @@ import { createPlayer } from '../fn/player-management/create-player';
 import { CreatePlayer$Params } from '../fn/player-management/create-player';
 import { getAllPlayers } from '../fn/player-management/get-all-players';
 import { GetAllPlayers$Params } from '../fn/player-management/get-all-players';
-import { getDashboardStats } from '../fn/player-management/get-dashboard-stats';
-import { GetDashboardStats$Params } from '../fn/player-management/get-dashboard-stats';
+import { getLeaderboardStats } from '../fn/player-management/get-leaderboard-stats';
+import { GetLeaderboardStats$Params } from '../fn/player-management/get-leaderboard-stats';
 import { getPlayerById } from '../fn/player-management/get-player-by-id';
 import { GetPlayerById$Params } from '../fn/player-management/get-player-by-id';
 import { LeaderboardPlayerStatsDto } from '../models/leaderboard-player-stats-dto';
 import { Player } from '../models/player';
 import { PlayerSimplifiedDto } from '../models/player-simplified-dto';
-import { PlayerStats } from '../models/player-stats';
 import { resetPlayerStats } from '../fn/player-management/reset-player-stats';
 import { ResetPlayerStats$Params } from '../fn/player-management/reset-player-stats';
 import { updatePlayerStats } from '../fn/player-management/update-player-stats';
@@ -51,7 +50,7 @@ export class PlayerManagementService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updatePlayerStats$Response(params: UpdatePlayerStats$Params, context?: HttpContext): Observable<StrictHttpResponse<PlayerStats>> {
+  updatePlayerStats$Response(params: UpdatePlayerStats$Params, context?: HttpContext): Observable<StrictHttpResponse<Player>> {
     return updatePlayerStats(this.http, this.rootUrl, params, context);
   }
 
@@ -65,9 +64,9 @@ export class PlayerManagementService extends BaseService {
    *
    * This method sends `application/json` and handles request body of type `application/json`.
    */
-  updatePlayerStats(params: UpdatePlayerStats$Params, context?: HttpContext): Observable<PlayerStats> {
+  updatePlayerStats(params: UpdatePlayerStats$Params, context?: HttpContext): Observable<Player> {
     return this.updatePlayerStats$Response(params, context).pipe(
-      map((r: StrictHttpResponse<PlayerStats>): PlayerStats => r.body)
+      map((r: StrictHttpResponse<Player>): Player => r.body)
     );
   }
 
@@ -84,7 +83,7 @@ export class PlayerManagementService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  resetPlayerStats$Response(params: ResetPlayerStats$Params, context?: HttpContext): Observable<StrictHttpResponse<Player>> {
+  resetPlayerStats$Response(params: ResetPlayerStats$Params, context?: HttpContext): Observable<StrictHttpResponse<any>> {
     return resetPlayerStats(this.http, this.rootUrl, params, context);
   }
 
@@ -98,9 +97,9 @@ export class PlayerManagementService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  resetPlayerStats(params: ResetPlayerStats$Params, context?: HttpContext): Observable<Player> {
+  resetPlayerStats(params: ResetPlayerStats$Params, context?: HttpContext): Observable<any> {
     return this.resetPlayerStats$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Player>): Player => r.body)
+      map((r: StrictHttpResponse<any>): any => r.body)
     );
   }
 
@@ -117,7 +116,7 @@ export class PlayerManagementService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllPlayers$Response(params?: GetAllPlayers$Params, context?: HttpContext): Observable<StrictHttpResponse<PlayerSimplifiedDto>> {
+  getAllPlayers$Response(params?: GetAllPlayers$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<PlayerSimplifiedDto>>> {
     return getAllPlayers(this.http, this.rootUrl, params, context);
   }
 
@@ -131,9 +130,9 @@ export class PlayerManagementService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getAllPlayers(params?: GetAllPlayers$Params, context?: HttpContext): Observable<PlayerSimplifiedDto> {
+  getAllPlayers(params?: GetAllPlayers$Params, context?: HttpContext): Observable<Array<PlayerSimplifiedDto>> {
     return this.getAllPlayers$Response(params, context).pipe(
-      map((r: StrictHttpResponse<PlayerSimplifiedDto>): PlayerSimplifiedDto => r.body)
+      map((r: StrictHttpResponse<Array<PlayerSimplifiedDto>>): Array<PlayerSimplifiedDto> => r.body)
     );
   }
 
@@ -183,7 +182,7 @@ export class PlayerManagementService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPlayerById$Response(params: GetPlayerById$Params, context?: HttpContext): Observable<StrictHttpResponse<Player>> {
+  getPlayerById$Response(params: GetPlayerById$Params, context?: HttpContext): Observable<StrictHttpResponse<any>> {
     return getPlayerById(this.http, this.rootUrl, params, context);
   }
 
@@ -197,14 +196,14 @@ export class PlayerManagementService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  getPlayerById(params: GetPlayerById$Params, context?: HttpContext): Observable<Player> {
+  getPlayerById(params: GetPlayerById$Params, context?: HttpContext): Observable<any> {
     return this.getPlayerById$Response(params, context).pipe(
-      map((r: StrictHttpResponse<Player>): Player => r.body)
+      map((r: StrictHttpResponse<any>): any => r.body)
     );
   }
 
-  /** Path part for operation `getDashboardStats()` */
-  static readonly GetDashboardStatsPath = '/api/players/leaderboard-stats';
+  /** Path part for operation `getLeaderboardStats()` */
+  static readonly GetLeaderboardStatsPath = '/api/players/leaderboard-stats';
 
   /**
    * Get Leaderboard.
@@ -212,12 +211,12 @@ export class PlayerManagementService extends BaseService {
    * Retrieves the Leaderboard by Wilson Score.
    *
    * This method provides access to the full `HttpResponse`, allowing access to response headers.
-   * To access only the response body, use `getDashboardStats()` instead.
+   * To access only the response body, use `getLeaderboardStats()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getDashboardStats$Response(params?: GetDashboardStats$Params, context?: HttpContext): Observable<StrictHttpResponse<LeaderboardPlayerStatsDto>> {
-    return getDashboardStats(this.http, this.rootUrl, params, context);
+  getLeaderboardStats$Response(params?: GetLeaderboardStats$Params, context?: HttpContext): Observable<StrictHttpResponse<Array<LeaderboardPlayerStatsDto>>> {
+    return getLeaderboardStats(this.http, this.rootUrl, params, context);
   }
 
   /**
@@ -226,13 +225,13 @@ export class PlayerManagementService extends BaseService {
    * Retrieves the Leaderboard by Wilson Score.
    *
    * This method provides access only to the response body.
-   * To access the full response (for headers, for example), `getDashboardStats$Response()` instead.
+   * To access the full response (for headers, for example), `getLeaderboardStats$Response()` instead.
    *
    * This method doesn't expect any request body.
    */
-  getDashboardStats(params?: GetDashboardStats$Params, context?: HttpContext): Observable<LeaderboardPlayerStatsDto> {
-    return this.getDashboardStats$Response(params, context).pipe(
-      map((r: StrictHttpResponse<LeaderboardPlayerStatsDto>): LeaderboardPlayerStatsDto => r.body)
+  getLeaderboardStats(params?: GetLeaderboardStats$Params, context?: HttpContext): Observable<Array<LeaderboardPlayerStatsDto>> {
+    return this.getLeaderboardStats$Response(params, context).pipe(
+      map((r: StrictHttpResponse<Array<LeaderboardPlayerStatsDto>>): Array<LeaderboardPlayerStatsDto> => r.body)
     );
   }
 

@@ -8,6 +8,7 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
+import { Player } from '../../models/player';
 import { PlayerStats } from '../../models/player-stats';
 
 export interface UpdatePlayerStats$Params {
@@ -15,7 +16,7 @@ export interface UpdatePlayerStats$Params {
       body: PlayerStats
 }
 
-export function updatePlayerStats(http: HttpClient, rootUrl: string, params: UpdatePlayerStats$Params, context?: HttpContext): Observable<StrictHttpResponse<PlayerStats>> {
+export function updatePlayerStats(http: HttpClient, rootUrl: string, params: UpdatePlayerStats$Params, context?: HttpContext): Observable<StrictHttpResponse<Player>> {
   const rb = new RequestBuilder(rootUrl, updatePlayerStats.PATH, 'put');
   if (params) {
     rb.path('id', params.id, {});
@@ -27,7 +28,7 @@ export function updatePlayerStats(http: HttpClient, rootUrl: string, params: Upd
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<PlayerStats>;
+      return r as StrictHttpResponse<Player>;
     })
   );
 }
