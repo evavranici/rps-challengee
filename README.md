@@ -1,4 +1,4 @@
-# 🎮 Rock, Paper, Scissors Game
+# 🎮 Rock, Paper, Scissors (& Well) Game
 
 A full-stack **Rock, Paper, Scissors** game featuring a **Spring Boot** backend, an **Angular** frontend, an **H2 Database**, and **Docker** containerization.
 
@@ -24,15 +24,15 @@ Includes **players management**, **game logic**, a **leaderboard**, and **monito
 ## ✨ Features
 
 - **Player Management**: Create and reset player profiles.
-- **Classic RPS Gameplay**: Play Rock, Paper, Scissors against a computer opponent.
+- **RPS Gameplay**: Play Rock, Paper, Scissors against a computer opponent. In Classic and Extended version (includes also "Well").
 - **Dynamic Leaderboard**: Ranked by [Wilson Score Interval](https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval).
 - **Responsive UI**: Built with Angular and Tailwind CSS, with building reusable components in mind.
 - **Keyboard Shortcut**: Press **`TAB`** to view the leaderboard while playing, a touch to the classic gaming.
-- **API Documentation**: Swagger/OpenAPI UI available.
+- **API Documentation**: Swagger/OpenAPI UI available. Uses a model-driven approach by generating files from the Swagger/OpenAPI spec.
 - **H2 Database Console**: Inspect the in-memory database via browser.
 - **Metrics Monitoring**: Via [Micrometer](https://micrometer.io/) and [Spring Boot Actuator](https://docs.spring.io/spring-boot/docs/current/actuator-api/html/) with Prometheus integration.
 - **Dockerized Deployment**: Single Docker container for backend & frontend.
-- **Intelligent Caching**: Angular Signals for caching players and leaderboard data.
+- **Intelligent Caching**: Ngrx store management for efficient caching of players and leaderboard data.
 
 ## 🛠 Technologies Used
 
@@ -51,7 +51,10 @@ Includes **players management**, **game logic**, a **leaderboard**, and **monito
 
 - [Angular 20+](https://angular.io/)
 - [TypeScript](https://www.typescriptlang.org/)
+- [Ngrx](https://ngrx.io/)
+- [OpenAPI code generator for Angular](https://www.npmjs.com/package/ng-openapi-gen)
 - [Tailwind CSS](https://tailwindcss.com/)
+- [Eslint](https://eslint.org/)
 
 ### 🐳 Containerization & Monitoring
 
@@ -67,7 +70,7 @@ Ensure you have the following installed:
 - Java Development Kit (JDK) 17+
 - Maven 3.8.5+
 - Node.js 18+ & npm 8+ (or Yarn)
-- Angular CLI 17+ → `npm install -g @angular/cli`
+- Angular CLI 17+ → `npm install -g @angular/cli@19`
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [Prometheus](https://prometheus.io/)
 - [Git](https://git-scm.com/)
@@ -75,16 +78,20 @@ Ensure you have the following installed:
 ### ⚙️ Backend Setup
 
 ```bash
+Be sure to have :8080 port available: lsof -i :8080
 cd rps-challengee/backend
-mvn clean install
+Optional - Full clean build: ./mvnw clean install
 ```
 
 ### 🎨 Frontend Setup
 
 ```bash
+Be sure to have :4200 port available: lsof -i :4200
 cd rps-challengee/frontend
 npm install
-npm run build
+npm run generate-api
+ng lint
+ng build
 ```
 
 ### 🐳 Docker Setup
@@ -99,7 +106,19 @@ Avoid inline comments — place comments on separate lines.
 ## 🏃 Running the Application
 
 ```bash
-docker run -p 80:80 -p 8080:8080 --name my-rps-app rps-challengee
+docker run -p 8080:8080 --name my-rps-app rps-backend
+```
+
+Optional (without Docker)
+```bash
+cd rps-challengee/backend
+java -jar target/rps-challenge-0.0.1-SNAPSHOT.jar
+```
+
+Finally run the Frontend
+```bash
+cd rps-challengee/frontend
+ng serve
 ```
 
 ## 🌐 Access the Application
@@ -120,7 +139,7 @@ Check one specific metrics:
 🧾 Swagger UI	              | http://localhost:8080/swagger-ui/index.html
 
 ```bash
-H2 Console Settings:
+H2 Console Settings (found at application.properties)
 
 JDBC URL: jdbc:h2:mem:rps_db
 User: rps
@@ -158,13 +177,13 @@ Open http://localhost:4200
 
 Create a player
 
-Play Rock, Paper, Scissors
+Play Rock, Paper, Scissors (and Well)
 
 View the leaderboard
 
-Press TAB (gamer shortcut)
+- Press TAB (gamer shortcut)
 
-Or click "View Leaderboard"
+- Or click "View Leaderboard"
 
 ## 📁 Project Structure
 
