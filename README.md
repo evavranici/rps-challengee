@@ -170,23 +170,35 @@ Or click "View Leaderboard"
 
 ```bash
 rps-challengee/
-├── backend/                   # Spring Boot backend
+├── backend/                           # Spring Boot backend
 │   ├── src/main/java/
+│   │   ├── com/interview/challenge/
+│   │   │   ├── config/               # configures CORS to allow requests from frontend (http://localhost:4200/api)
+│   │   │   ├── dto/                  # holds dto-s: LeaderboardPlayerStatsDto.java & PlayerSimplifiedDto.java
+│   │   │   ├── player/               # holds everything related to Player: PlayerEntity, PlayerController, PlayerRepository, PlayerService
+│   │   │   │   ├── stats/            # holds everything related to PlayerStats: PlayerStats.java, GameChoice enum
+│   │   │   ├── shared/               # GameChoiceConverter.java
 │   ├── src/main/resources/
-│   └── pom.xml
-├── frontend/                  # Angular frontend
+│   │   ├── application.properties/   # configurations for server, database h2, swagger openai, actuator, prometheus
+│   └── pom.xml                       # all the dependancies
+├── frontend/                      # Angular frontend
 │   ├── src/
 │   │   ├── app/
+│   │   │   ├── api/               # files generated from npm run generate-api  
 │   │   │   ├── components/        # Reusable Angular components
 │   │   │   ├── shared/
 │   │   │   │   ├── interfaces/
 │   │   │   │   ├── pipes/
 │   │   │   │   └── services/
+│   │   │   └── store/             # ngrx store
 │   │   │   └── views/             # Feature-specific views/pages
+│   │   └── assets
+│   │   │   ├── api-docs.json/               # json copied from openapi (http://localhost:8080/api-docs)
 │   │   └── ...
+├── docker-entrypoint.sh
 ├── Dockerfile
 ├── nginx.conf
-├── docker-entrypoint.sh
+├── prometheus.yml
 └── README.md
 ```
 
