@@ -74,6 +74,10 @@ public class PlayerService {
     @Timed(value = "player.stats.update.duration", description = "Time taken to update player statistics")
     public Player updatePlayerStats(Long playerId, PlayerStats updatedStats) {
         return playerRepository.findById(playerId).map(player -> {
+            // Ensure history is trimmed before saving
+            updatedStats.setPlayerHistory(updatedStats.getPlayerHistory());
+            updatedStats.setComputerHistory(updatedStats.getComputerHistory());
+
             player.setStats(updatedStats);
             Player savedPlayer = playerRepository.save(player);
             playerStatsUpdatedCounter.increment();

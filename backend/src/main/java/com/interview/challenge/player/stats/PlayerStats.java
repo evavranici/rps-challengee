@@ -2,7 +2,6 @@ package com.interview.challenge.player.stats;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import com.interview.challenge.shared.GameChoiceConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +41,11 @@ public class PlayerStats {
     @ElementCollection(targetClass = GameChoice.class)
     @Enumerated(EnumType.STRING)
     @Schema(description = "History of player's choices (e.g., 'rock', 'paper')", example = "[\"scissors\", \"scissors\"]")
-    @Convert(converter = GameChoiceConverter.class)
     private List<GameChoice> playerHistory = new ArrayList<>();
 
     @ElementCollection(targetClass = GameChoice.class)
     @Enumerated(EnumType.STRING)
     @Schema(description = "History of computer's choices against this player", example = "[\"paper\", \"rock\"]")
-    @Convert(converter = GameChoiceConverter.class)
     private List<GameChoice> computerHistory = new ArrayList<>();
 
     @Min(value = 0, message = "Total nr. of rounds cannot be negative")
@@ -91,14 +88,14 @@ public class PlayerStats {
         return playerHistory;
     }
     public void setPlayerHistory(List<GameChoice> playerHistory) {
-        this.playerHistory = playerHistory;
+        this.playerHistory = trimToLastFive(playerHistory);
     }
 
     public List<GameChoice> getComputerHistory() {
         return computerHistory;
     }
     public void setComputerHistory(List<GameChoice> computerHistory) {
-        this.computerHistory = computerHistory;
+        this.computerHistory = trimToLastFive(computerHistory);
     }
 
     public int getTotalRounds() {
@@ -106,5 +103,11 @@ public class PlayerStats {
     }
     public void setTotalRounds(int totalRounds) {
         this.totalRounds = totalRounds;
+    }
+
+    private List<GameChoice> trimToLastFive(List<GameChoice> history) {
+        if (history == null || history.isEmpty()) return new ArrayList<>();
+        int size = history.size();
+        return new ArrayList<>(history.subList(Math.max(size - 5, 0), size));
     }
 }

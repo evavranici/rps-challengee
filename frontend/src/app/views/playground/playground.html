@@ -41,24 +41,22 @@
             id="player-info"
             class="flex items-center justify-center space-x-2 mb-2"
           >
-            <span id="player-avatar" class="text-2xl">{{
-              (currentPlayer$ | async)?.icon
-            }}</span>
+            <span id="player-avatar" class="text-2xl">{{ player.icon }}</span>
             <p
               id="player-name-display"
               class="font-orbitron text-xl md:text-2xl text-blue-400"
             >
-              {{ (currentPlayer$ | async)?.name }}
+              {{ player.name }}
             </p>
           </div>
           <p id="player-score" class="text-4xl md:text-5xl font-bold">
-            {{ (currentPlayer$ | async)?.stats?.playerScore }}
+            {{ player.stats.playerScore }}
           </p>
         </div>
         <div class="text-center">
           <p class="font-orbitron text-xl md:text-2xl text-red-400">COMPUTER</p>
           <p id="computer-score" class="text-4xl md:text-5xl font-bold">
-            {{ (currentPlayer$ | async)?.stats?.computerScore }}
+            {{ player.stats.computerScore }}
           </p>
         </div>
       </div>

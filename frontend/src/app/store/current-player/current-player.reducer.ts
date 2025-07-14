@@ -1,6 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialCurrentPlayerState } from './current-player.state';
 import * as CurrentPlayerActions from './current-player.actions';
+import { newPlayer } from '../../shared/interfaces/player.interface';
 
 export const currentPlayerReducer = createReducer(
   initialCurrentPlayerState,
@@ -19,7 +20,7 @@ export const currentPlayerReducer = createReducer(
   })),
   on(CurrentPlayerActions.loadCurrentPlayerFailure, (state, { error }) => ({
     ...state,
-    player: null, // clear player on failure
+    player: newPlayer, // clear player on failure
     isLoading: false,
     error: error,
   })),

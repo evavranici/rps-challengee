@@ -1,4 +1,4 @@
-import { PlayerStats } from '../../api/models';
+import { Player, PlayerStats } from '../../api/models';
 
 //interfaces
 export interface ChoiceDefinition {
@@ -28,6 +28,13 @@ export const newStats: PlayerStats = {
   playerHistory: [],
   computerHistory: [],
   totalRounds: 0,
+};
+
+export const newPlayer: Player = {
+  id: undefined,
+  name: '',
+  icon: '',
+  stats: newStats,
 };
 
 // enums

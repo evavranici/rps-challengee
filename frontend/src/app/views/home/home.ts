@@ -9,7 +9,7 @@ import * as PlayersActions from '../../store/players/players.actions';
 import * as PlayersSelectors from '../../store/players/players.selectors';
 import { Observable } from 'rxjs';
 import { RootState } from '../../store/root.state';
-import { Player, PlayerSimplifiedDto } from '../../api/models';
+import { PlayerSimplifiedDto } from '../../api/models';
 
 @Component({
   selector: 'app-home',

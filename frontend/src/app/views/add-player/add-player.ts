@@ -7,7 +7,6 @@ import { CustomizedButton } from '../../components/customized-button/customized-
 import { PlayersState } from '../../store/players/players.state';
 import { Store } from '@ngrx/store';
 import * as PlayersActions from '../../store/players/players.actions';
-import { Player } from '../../api/models';
 
 @Component({
   selector: 'app-add-player',

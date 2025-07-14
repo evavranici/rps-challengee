@@ -10,9 +10,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   ChoiceDefinition,
   GameChoice,
-  newStats,
+  newPlayer,
 } from '../../shared/interfaces/player.interface';
-import { Observable, Subject, takeUntil, firstValueFrom } from 'rxjs';
+import { Observable, Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { SafeHtmlPipe } from '../../shared/pipes/safe-html.pipe';
 import { Monitoring } from '../../components/monitoring/monitoring';
@@ -30,11 +30,11 @@ import {
   Player,
   PlayerStats,
 } from '../../api/models';
+import { GameAnimationService } from '../../shared/services/game-animation-service.service';
+import { GameEngineService } from '../../shared/services/game-engine-service.service';
+import { GameDisplayService } from '../../shared/services/game-display-service.service';
 
 const ANIMATION_DELAY_INITIAL = 50;
-const ANIMATION_DELAY_SHOW_MOVES = 500;
-const ANIMATION_DELAY_VANISH = 2000;
-const ANIMATION_DURATION_SHAKE = 500;
 
 @Component({
   selector: 'app-playground',
@@ -53,14 +53,19 @@ const ANIMATION_DURATION_SHAKE = 500;
 export class Playground implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private gameConfigService = inject(GameConfigService);
   private store = inject(Store<RootState>);
+  private gameEngineService = inject(GameEngineService);
+  private gameConfigService = inject(GameConfigService);
+  private gameDisplayService = inject(GameDisplayService);
+  private animationService = inject(GameAnimationService);
 
-  @ViewChild('gameArena') gameArenaEl!: ElementRef;
-  @ViewChild('playerChoiceDisplayEl') playerChoiceDisplayEl!: ElementRef;
-  @ViewChild('computerChoiceDisplayEl') computerChoiceDisplayEl!: ElementRef;
-  @ViewChild('myHiddenDiv') myHiddenDivEl!: ElementRef;
-  @ViewChild('rpsPlayArea') rpsPlayAreaEl!: ElementRef;
+  @ViewChild('gameArena') gameArenaEl!: ElementRef<HTMLElement>;
+  @ViewChild('playerChoiceDisplayEl')
+  playerChoiceDisplayEl!: ElementRef<HTMLElement>;
+  @ViewChild('computerChoiceDisplayEl')
+  computerChoiceDisplayEl!: ElementRef<HTMLElement>;
+  @ViewChild('myHiddenDiv') myHiddenDivEl!: ElementRef<HTMLElement>;
+  @ViewChild('rpsPlayArea') rpsPlayAreaEl!: ElementRef<HTMLElement>;
 
   isPlaying: boolean = false;
   countdownText: string = '';
@@ -77,15 +82,10 @@ export class Playground implements OnInit, OnDestroy {
   title: string = 'Rock, Paper, Scissors';
   choices: Record<GameChoice, ChoiceDefinition>;
   choiceKeys: GameChoice[];
+  player: Player = newPlayer; // Current player object
 
   leaderboardData$: Observable<LeaderboardPlayerStatsDto[]>;
-  leaderboardIsLoading$: Observable<boolean>;
-  leaderboardError$: Observable<unknown>;
-
-  currentPlayer$: Observable<Player | null>; // Observable for the current player from the store
-  currentPlayerIsLoading$: Observable<boolean>;
-  currentPlayerError$: Observable<unknown>;
-
+  currentPlayer$: Observable<Player>; // Observable for the current player from the store
   destroy$ = new Subject<void>();
 
   constructor() {
@@ -95,21 +95,8 @@ export class Playground implements OnInit, OnDestroy {
     this.leaderboardData$ = this.store.pipe(
       select(LeaderboardSelectors.selectLeaderboardData)
     );
-    this.leaderboardIsLoading$ = this.store.pipe(
-      select(LeaderboardSelectors.selectLeaderboardIsLoading)
-    );
-    this.leaderboardError$ = this.store.pipe(
-      select(LeaderboardSelectors.selectLeaderboardError)
-    );
-
     this.currentPlayer$ = this.store.pipe(
       select(CurrentPlayerSelectors.selectCurrentPlayer)
-    );
-    this.currentPlayerIsLoading$ = this.store.pipe(
-      select(CurrentPlayerSelectors.selectCurrentPlayerIsLoading)
-    );
-    this.currentPlayerError$ = this.store.pipe(
-      select(CurrentPlayerSelectors.selectCurrentPlayerError)
     );
   }
 
@@ -128,8 +115,9 @@ export class Playground implements OnInit, OnDestroy {
 
     this.currentPlayer$.pipe(takeUntil(this.destroy$)).subscribe((player) => {
       console.log('Current player:', player);
+      this.player = player; // Update the local player variable
       if (player) {
-        this.updateUIDisplay(player);
+        this.updateUIDisplay();
       } else {
         this.resetUIDisplay();
       }
@@ -171,58 +159,87 @@ export class Playground implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    this.store.dispatch(CurrentPlayerActions.clearCurrentPlayer()); //Dispatch action to clear current player state when leaving the page
+    this.store.dispatch(CurrentPlayerActions.clearCurrentPlayer());
   }
 
   async makeChoice(playerChoice: GameChoice): Promise<void> {
     console.log('Player choice:', playerChoice);
+    if (!this.canMakeChoice()) return;
 
-    const player = await firstValueFrom(this.currentPlayer$);
+    const computerChoice = this.gameEngineService.getComputerChoice();
+    const winner = this.gameEngineService.getWinner(
+      playerChoice,
+      computerChoice
+    );
+    const updatedStats = this.gameEngineService.updateStats(
+      playerChoice,
+      computerChoice,
+      winner,
+      this.player
+    );
 
+    await this.playRoundWithCountdown(playerChoice, computerChoice, winner);
+    this.saveStatsIfValid(updatedStats);
+  }
+
+  private canMakeChoice(): boolean {
     if (this.isPlaying) {
       console.warn('Game is already in progress. Ignoring new choice.');
-      return;
-    }
-    if (!player || player.id === null) {
-      console.error(
-        'Cannot make choice: Current player is not loaded or has no ID.'
-      );
-      this.router.navigate(['/']);
-      return;
+      return false;
     }
 
+    if (!this.player || this.player.id === null) {
+      console.error('Current player not loaded or has no ID.');
+      this.router.navigate(['/']);
+      return false;
+    }
+
+    return true;
+  }
+
+  private async playRoundWithCountdown(
+    playerChoice: GameChoice,
+    computerChoice: GameChoice,
+    winner: 'player' | 'computer' | 'tie'
+  ): Promise<void> {
     this.isPlaying = true;
     this.countdownText = '';
     this.clearPlayedCards();
 
-    const computerChoice = this.getComputerChoice();
-    const winner = this.getWinner(playerChoice, computerChoice);
-    const updatedStats = this.updateStats(
-      playerChoice,
-      computerChoice,
-      winner,
-      player
-    );
-
     await this.startCountdown();
     this.displayChoices(playerChoice, computerChoice);
-    await this.playAnimation(winner);
+    await this.animationService.delay(ANIMATION_DELAY_INITIAL);
 
-    // Dispatch action to update player stats via NgRx effect
-    if (player.id !== null && updatedStats) {
-      // Use 'player.id' here
+    const playerEl = this.playerChoiceDisplayEl.nativeElement;
+    const computerEl = this.computerChoiceDisplayEl.nativeElement;
+    const gameArenaEl = this.gameArenaEl.nativeElement;
+
+    await this.animationService.playAnimation(
+      winner,
+      playerEl,
+      computerEl,
+      gameArenaEl,
+      () => this.finalizeRound()
+    );
+  }
+
+  private saveStatsIfValid(updatedStats: PlayerStats): void {
+    if (
+      this.player.id !== null &&
+      this.player.id !== undefined &&
+      updatedStats
+    ) {
       this.store.dispatch(
         CurrentPlayerActions.updateCurrentPlayerStats({
-          playerId: player.id || 0, // Fallback to 0 if player.id is null
+          playerId: this.player.id,
           stats: updatedStats,
         })
       );
-      // The effect will handle calling ApiService and then dispatching success/failure... and also marking leaderboard stale and reloading.
     } else {
       console.error(
         'Cannot update player stats: Player ID or stats are missing.'
       );
-      this.isPlaying = false; // Re-enable buttons
+      this.isPlaying = false; // fallback just in case
       this.countdownText = '';
     }
   }
@@ -248,93 +265,27 @@ export class Playground implements OnInit, OnDestroy {
     });
   }
 
-  private getComputerChoice() {
-    return this.choiceKeys[Math.floor(Math.random() * this.choiceKeys.length)];
-  }
-
-  private getWinner(
-    playerChoice: GameChoice,
-    computerChoice: GameChoice
-  ): 'player' | 'computer' | 'tie' {
-    if (playerChoice === computerChoice) {
-      this.resultClass = 'text-yellow-300';
-      return 'tie';
-    }
-
-    // if player wins
-    if (this.choices[playerChoice].beats.includes(computerChoice)) {
-      this.resultClass = 'text-green-400';
-      return 'player';
-    }
-
-    // if computer wins
-    if (this.choices[computerChoice].beats.includes(playerChoice)) {
-      this.resultClass = 'text-red-400';
-      return 'computer';
-    }
-
-    // Fallback in case of unexpected logic
-    this.resultClass = 'text-yellow-300';
-    return 'tie';
-  }
-
   private displayChoices(
     playerChoice: GameChoice,
     computerChoice: GameChoice
   ): void {
-    this.playerChoiceDisplay = this.createChoiceDisplayHtml(playerChoice, true);
-    this.computerChoiceDisplay = this.createChoiceDisplayHtml(
+    this.playerChoiceDisplay = this.gameDisplayService.createChoiceHtml(
+      playerChoice,
+      true
+    );
+    this.computerChoiceDisplay = this.gameDisplayService.createChoiceHtml(
       computerChoice,
       false
     );
   }
 
-  private createChoiceDisplayHtml(
-    choice: GameChoice,
-    isPlayer: boolean
-  ): string {
-    const glowClass = isPlayer ? 'selected-player' : 'selected-computer';
-
-    return `<div class="choice-card-display ${glowClass}" style="width: 150px;">
-              <div class="w-full h-20 flex items-center justify-center text-6xl">${this.choices[choice].emoji}</div>
-              <p class="text-center font-semibold text-lg mt-2">${this.choices[choice].name}</p>
-            </div>`;
-  }
-
-  private updateStats(
-    playerChoice: GameChoice,
-    computerChoice: GameChoice,
-    winner: 'player' | 'computer' | 'tie',
-    player: Player
-  ): PlayerStats {
-    const updatedStats = player.stats ? { ...player.stats } : { ...newStats };
-
-    // Create a NEW stats object to maintain immutability
-    updatedStats.playerHistory = [...updatedStats.playerHistory, playerChoice];
-    updatedStats.computerHistory = [
-      ...updatedStats.computerHistory,
-      computerChoice,
-    ];
-    updatedStats.totalRounds = (updatedStats.totalRounds ?? 0) + 1;
-
-    if (winner === 'player') {
-      updatedStats.playerScore = (updatedStats.playerScore ?? 0) + 1;
-      updatedStats.playerWins = (updatedStats.playerWins ?? 0) + 1;
-    } else if (winner === 'computer') {
-      updatedStats.computerScore = (updatedStats.computerScore ?? 0) + 1;
-      updatedStats.computerWins = (updatedStats.computerWins ?? 0) + 1;
-    }
-
-    return updatedStats;
-  }
-
-  private updateUIDisplay(player: Player): void {
-    if (!player || !player.stats) {
+  private updateUIDisplay(): void {
+    if (!this.player || !this.player.stats) {
       this.resetUIDisplay();
       return;
     }
 
-    const stats = player.stats;
+    const stats = this.player.stats;
 
     this.playerWinRate =
       stats.totalRounds > 0
@@ -345,11 +296,19 @@ export class Playground implements OnInit, OnDestroy {
         ? Math.round((stats.computerWins / stats.totalRounds) * 100)
         : 0;
 
-    this.playerMostUsed = this.getMostFrequentDisplay(stats.playerHistory);
-    this.computerMostUsed = this.getMostFrequentDisplay(stats.computerHistory);
+    this.playerMostUsed = this.gameDisplayService.getMostFrequentHtml(
+      stats.playerHistory
+    );
+    this.computerMostUsed = this.gameDisplayService.getMostFrequentHtml(
+      stats.computerHistory
+    );
 
-    this.playerHistoryDisplay = this.getHistoryDisplay(stats.playerHistory);
-    this.computerHistoryDisplay = this.getHistoryDisplay(stats.computerHistory);
+    this.playerHistoryDisplay = this.gameDisplayService.getHistoryHtml(
+      stats.playerHistory
+    );
+    this.computerHistoryDisplay = this.gameDisplayService.getHistoryHtml(
+      stats.computerHistory
+    );
   }
 
   private resetUIDisplay(): void {
@@ -361,129 +320,19 @@ export class Playground implements OnInit, OnDestroy {
     this.computerHistoryDisplay = '';
   }
 
-  getMostFrequentDisplay(history: GameChoice[]): string {
-    if (!history || history.length === 0) return '-';
-    const counts = history.reduce((acc, choice) => {
-      acc[choice] = (acc[choice] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
-    const mostFrequent = Object.keys(counts).reduce((a, b) =>
-      counts[a] > counts[b] ? a : b
-    );
-
-    return `<div class="flex items-center justify-center"><span style="font-size: 2.5em;">${
-      this.choices[mostFrequent as GameChoice].emoji
-    }</span> <span class="ml-2">${
-      this.choices[mostFrequent as GameChoice].name
-    }</span></div>`;
-  }
-
-  getHistoryDisplay(history: GameChoice[]): string {
-    if (!history) return '';
-
-    return history
-      .slice(-5)
-      .map(
-        (choice) =>
-          `<span style="font-size: 2em; margin: 0 5px;">${this.choices[choice].emoji}</span>`
-      )
-      .join('');
-  }
-
   getChoiceEmoji(choiceKey: GameChoice): string {
     return this.choices[choiceKey].emoji;
-  }
-
-  private async playAnimation(
-    winner: 'player' | 'computer' | 'tie'
-  ): Promise<void> {
-    await this.delay(ANIMATION_DELAY_INITIAL);
-
-    const playerEl = this.playerChoiceDisplayEl.nativeElement;
-    const computerEl = this.computerChoiceDisplayEl.nativeElement;
-    const gameArenaEl = this.gameArenaEl.nativeElement;
-
-    this.clearAnimationStates(playerEl, computerEl, gameArenaEl);
-
-    if (winner === 'tie') {
-      await this.handleTieAnimation(gameArenaEl);
-      this.finalizeRound();
-      return;
-    }
-
-    const [winningEl, losingEl] =
-      winner === 'player' ? [playerEl, computerEl] : [computerEl, playerEl];
-
-    await this.delay(ANIMATION_DELAY_INITIAL);
-
-    gameArenaEl.style.transform = 'scale(1.05)';
-
-    await this.delay(ANIMATION_DELAY_SHOW_MOVES);
-    this.applyMoveAnimations(winningEl, playerEl, computerEl);
-
-    await this.delay(ANIMATION_DELAY_VANISH - ANIMATION_DELAY_SHOW_MOVES);
-    this.applyVanishAnimation(losingEl, gameArenaEl);
-
-    this.finalizeRound();
-  }
-
-  delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  clearAnimationStates(
-    playerEl: HTMLElement,
-    computerEl: HTMLElement,
-    gameArenaEl: HTMLElement
-  ): void {
-    gameArenaEl.classList.remove('shake-animation');
-    gameArenaEl.style.transform = 'scale(1)';
-    playerEl.classList.remove(
-      'show-in-front',
-      'player-moves',
-      'animate-vanish'
-    );
-    computerEl.classList.remove(
-      'show-in-front',
-      'computer-moves',
-      'animate-vanish'
-    );
-  }
-
-  async handleTieAnimation(gameArenaEl: HTMLElement): Promise<void> {
-    await this.delay(ANIMATION_DELAY_SHOW_MOVES);
-    gameArenaEl.classList.add('shake-animation');
-
-    await this.delay(ANIMATION_DURATION_SHAKE);
-    gameArenaEl.classList.remove('shake-animation');
   }
 
   finalizeRound(): void {
     this.isPlaying = false; // allow new round to start
   }
 
-  applyMoveAnimations(
-    winningEl: HTMLElement,
-    playerEl: HTMLElement,
-    computerEl: HTMLElement
-  ): void {
-    winningEl.classList.add('show-in-front');
-    playerEl.classList.add('player-moves');
-    computerEl.classList.add('computer-moves');
-  }
-
-  applyVanishAnimation(losingEl: HTMLElement, gameArenaEl: HTMLElement): void {
-    losingEl.classList.add('animate-vanish');
-    gameArenaEl.style.transform = 'scale(1)';
-  }
-
   async resetPlaysStats(): Promise<void> {
-    const player = await firstValueFrom(this.currentPlayer$);
-
-    if (player && player.id !== null) {
+    if (this.player && this.player.id !== undefined) {
       this.store.dispatch(
         CurrentPlayerActions.resetCurrentPlayerStats({
-          playerId: player.id || 0,
+          playerId: this.player.id,
         })
       );
 
