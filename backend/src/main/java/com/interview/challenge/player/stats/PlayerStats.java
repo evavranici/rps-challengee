@@ -13,8 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
         requiredProperties = {
                 "playerScore",
                 "computerScore",
-                "playerWins",
-                "computerWins",
                 "playerHistory",
                 "computerHistory",
                 "totalRounds",
@@ -29,14 +27,6 @@ public class PlayerStats {
     @Min(value = 0, message = "Score cannot be negative")
     @Schema(description = "The computer's current score (points from player's losses)", example = "1")
     private int computerScore = 0;
-
-    @Min(value = 0, message = "Nr. of rounds cannot be negative")
-    @Schema(description = "Number of rounds the player has won", example = "1")
-    private int playerWins = 0;
-
-    @Min(value = 0, message = "Nr. of rounds cannot be negative")
-    @Schema(description = "Number of rounds the computer has won against this player", example = "1")
-    private int computerWins = 0;
 
     @ElementCollection(targetClass = GameChoice.class)
     @Enumerated(EnumType.STRING)
@@ -68,20 +58,6 @@ public class PlayerStats {
     }
     public void setComputerScore(int computerScore) {
         this.computerScore = computerScore;
-    }
-
-    public int getPlayerWins() {
-        return playerWins;
-    }
-    public void setPlayerWins(int playerWins) {
-        this.playerWins = playerWins;
-    }
-
-    public int getComputerWins() {
-        return computerWins;
-    }
-    public void setComputerWins(int computerWins) {
-        this.computerWins = computerWins;
     }
 
     public List<GameChoice> getPlayerHistory() {

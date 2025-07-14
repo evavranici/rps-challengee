@@ -19,11 +19,6 @@ export interface PlayerStats {
   computerScore: number;
 
   /**
-   * Number of rounds the computer has won against this player
-   */
-  computerWins: number;
-
-  /**
    * History of player's choices (e.g., 'rock', 'paper')
    */
   playerHistory: Array<'rock' | 'paper' | 'scissors' | 'well'>;
@@ -32,11 +27,6 @@ export interface PlayerStats {
    * The player's current score (points for wins)
    */
   playerScore: number;
-
-  /**
-   * Number of rounds the player has won
-   */
-  playerWins: number;
 
   /**
    * Total number of rounds played by this player

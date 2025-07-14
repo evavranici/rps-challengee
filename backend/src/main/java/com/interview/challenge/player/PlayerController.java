@@ -159,7 +159,7 @@ public class PlayerController {
         List<Player> players = playerService.findAll();
         List<LeaderboardPlayerStatsDto> stats = players.stream()
                 .map(player -> {
-                    int wins = player.getStats().getPlayerWins();
+                    int wins = player.getStats().getPlayerScore();
                     int gamesPlayed = player.getStats().getTotalRounds();
 
                     double winPercentage = (gamesPlayed > 0) ? ((double) wins / gamesPlayed) * 100.0 : 0.0;

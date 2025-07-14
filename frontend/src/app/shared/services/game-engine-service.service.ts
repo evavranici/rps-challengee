@@ -42,10 +42,8 @@ export class GameEngineService {
 
     if (winner === 'player') {
       updatedStats.playerScore = (updatedStats.playerScore ?? 0) + 1;
-      updatedStats.playerWins = (updatedStats.playerWins ?? 0) + 1;
     } else if (winner === 'computer') {
       updatedStats.computerScore = (updatedStats.computerScore ?? 0) + 1;
-      updatedStats.computerWins = (updatedStats.computerWins ?? 0) + 1;
     }
 
     return updatedStats;

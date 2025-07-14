@@ -32,8 +32,10 @@
               "
               class="player-list-item flex items-center justify-center space-x-4 p-2 rounded-lg cursor-pointer transition duration-150 w-full"
             >
-              <span class="text-4xl">{{ player.icon || "👤" }}</span>
-              <span class="text-xl">{{ player.name }}</span>
+              <span class="text-4xl" *ngIf="player">{{
+                player.icon || "👤"
+              }}</span>
+              <span class="text-xl" *ngIf="player">{{ player.name }}</span>
             </button>
           </div>
         </div>

@@ -23,15 +23,15 @@
         <tbody>
           <tr *ngFor="let player of leaderboard; let i = index">
             <td class="rank">{{ i + 1 }}</td>
-            <td>
+            <td *ngIf="player">
               <div class="flex items-center">
                 <span class="avatar">{{ player.icon }}</span>
                 <span>{{ player.name }}</span>
               </div>
             </td>
-            <td>{{ player.winPercentage }}%</td>
-            <td class="text-center">{{ player.gamesPlayed }}</td>
-            <td>{{ player.score | number : "1.4-4" }}</td>
+            <td *ngIf="player">{{ player.winPercentage }}%</td>
+            <td class="text-center" *ngIf="player">{{ player.gamesPlayed }}</td>
+            <td *ngIf="player">{{ player.score | number : "1.4-4" }}</td>
           </tr>
         </tbody>
       </table>

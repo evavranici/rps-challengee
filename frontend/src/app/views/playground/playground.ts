@@ -279,7 +279,7 @@ export class Playground implements OnInit, OnDestroy {
     );
   }
 
-  private updateUIDisplay(): void {
+  updateUIDisplay(): void {
     if (!this.player || !this.player.stats) {
       this.resetUIDisplay();
       return;
@@ -289,11 +289,11 @@ export class Playground implements OnInit, OnDestroy {
 
     this.playerWinRate =
       stats.totalRounds > 0
-        ? Math.round((stats.playerWins / stats.totalRounds) * 100)
+        ? Math.round((stats.playerScore / stats.totalRounds) * 100)
         : 0;
     this.computerWinRate =
       stats.totalRounds > 0
-        ? Math.round((stats.computerWins / stats.totalRounds) * 100)
+        ? Math.round((stats.computerScore / stats.totalRounds) * 100)
         : 0;
 
     this.playerMostUsed = this.gameDisplayService.getMostFrequentHtml(
@@ -352,7 +352,7 @@ export class Playground implements OnInit, OnDestroy {
   }
 
   get gridColsClass(): string {
-    switch (this.choiceKeys.length) {
+    switch (this.choiceKeys?.length) {
       case 3:
         return 'grid-cols-3';
       case 4:
@@ -363,6 +363,10 @@ export class Playground implements OnInit, OnDestroy {
   }
 
   private updateGameTitle(): void {
+    if (!this.choiceKeys || this.choiceKeys?.length === 0) {
+      this.title = 'Rock, Paper, Scissors!';
+      return;
+    }
     this.title = this.choiceKeys
       .map((key) => this.choices[key].name)
       .join(', ');

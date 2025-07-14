@@ -10,7 +10,7 @@ export interface ChoiceDefinition {
 // constants
 export const allChoices: Record<GameChoice, ChoiceDefinition> = {
   rock: { name: 'Rock', beats: ['scissors'], emoji: '✊' },
-  paper: { name: 'Paper', beats: ['rock'], emoji: '✋' },
+  paper: { name: 'Paper', beats: ['rock', 'well'], emoji: '✋' },
   scissors: { name: 'Scissors', beats: ['paper'], emoji: '✌️' },
   well: { name: 'Well', beats: ['rock', 'scissors'], emoji: '⛲️' },
 };
@@ -23,8 +23,6 @@ export const modeChoices: Record<GameMode, GameChoice[]> = {
 export const newStats: PlayerStats = {
   playerScore: 0,
   computerScore: 0,
-  playerWins: 0,
-  computerWins: 0,
   playerHistory: [],
   computerHistory: [],
   totalRounds: 0,
